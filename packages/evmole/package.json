@@ -1,0 +1,24 @@
+{
+  "name": "evmole",
+  "version": "0.3.7",
+  "private": true,
+  "description": "Extracts function selectors and arguments from EVM bytecode",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs"
+  },
+  "scripts": {
+    "build": "rm -rf dist/ && pnpm build-cjs && pnpm build-esm && cp ./src/index.d.ts dist/",
+    "build-cjs": "esbuild ./src/ --bundle --minify --sourcemap --format=cjs --outfile=dist/index.cjs",
+    "build-esm": "esbuild ./src/ --bundle --minify --sourcemap --format=esm --outfile=dist/index.mjs"
+  },
+  "author": "Maxim Andreev <andreevmaxim@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/cdump/evmole",
+  "devDependencies": {
+    "esbuild": "^0.21"
+  }
+}

@@ -1,0 +1,40 @@
+networks:
+  mongo-network:
+    external: true
+
+services:
+  findPools:
+    image: tokenuity-explorer
+    container_name: tokenuity-findPools
+    restart: always
+    networks:
+      - mongo-network
+    environment:
+      - INSTANCE_FUNCTION_TYPE=findPools
+    env_file: apps/explorer/.env
+
+  findSwaps:
+    image: tokenuity-explorer
+    container_name: tokenuity-findSwaps
+    restart: always
+    networks:
+      - mongo-network
+    depends_on:
+      findPools:
+        condition: service_started
+    environment:
+      - INSTANCE_FUNCTION_TYPE=findSwaps
+    env_file: apps/explorer/.env
+
+  # findTrades:
+  #   image: explorer
+  #   container_name: tokenuity-findTrades
+  #   restart: always
+  #   depends_on:
+  #     mongo:
+  #       condition: service_healthy
+  #     findSwaps:
+  #       condition: service_started
+  #   environment:
+  #     - INSTANCE_FUNCTION_TYPE=findTrades
+  #   env_file: .env.production

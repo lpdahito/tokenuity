@@ -1,0 +1,1 @@
+export default process.env.FROM_SLS === 'true'

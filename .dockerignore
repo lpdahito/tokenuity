@@ -1,0 +1,44 @@
+# dependencies — all levels
+**/node_modules
+.pnpm-store
+
+# build output
+**/dist
+**/build
+**/.next
+**/.turbo
+**/*.tsbuildinfo
+
+# git
+.git
+.gitignore
+**/.gitignore
+
+# env & secrets
+**/.env
+**/.env.*
+!**/.env.example
+**/*.pem
+**/*.key
+
+# serverless
+**/.serverless
+**/serverless.yml
+
+# data & scratch
+**/dump
+**/coverage
+common.txt
+errors.txt
+data.txt
+notes.txt
+package1.json
+swap-finder/
+
+# docs & editor
+**/README.md
+.vscode
+.idea
+.DS_Store
+docker-compose.yml
+**/Dockerfile

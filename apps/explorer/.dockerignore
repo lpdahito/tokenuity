@@ -1,0 +1,17 @@
+.DS_Store
+node_modules
+.git
+.gitignore
+.env
+.env.production
+.serverless
+dump
+common.txt
+errors.txt
+README.md
+trends-explorer-ec2.pem
+notes.txt
+data.txt
+package1.json
+swap-finder
+serverless.yml

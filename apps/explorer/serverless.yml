@@ -1,0 +1,234 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: lpdahito
+# ***********************************************************
+# ***********************************************************
+
+# sls package --stage production --aws-profile tokenuity-sls
+# sls deploy --stage production --aws-profile tokenuity-sls
+# sls remove --stage production --aws-profile tokenuity-sls
+
+# Important: sls rollback -t 1686407801130 --stage production
+
+# https://github.com/agutoli/serverless-layers/issues/51
+# https://medium.com/tech-carnot/triggering-one-aws-lambda-from-another-using-the-serverless-framework-816006b27b8f
+# https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cron-expressions.html
+
+# ***********************************************************
+# ***********************************************************
+
+service: trends-serverless
+frameworkVersion: '3.39'
+
+useDotenv: true
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: nodejs20.x
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: "*"
+
+    - Effect: "Deny"
+      Action:
+        - "logs:CreateLogGroup"
+        - "logs:CreateLogStream"
+        - "logs:PutLogEvents"
+      Resource: "*"
+
+  environment:
+    FROM_SLS: 'true'
+
+    MONGODB_USER_ARB: ${env:MONGODB_USER_ARB}
+    MONGODB_PWD_ARB: ${env:MONGODB_PWD_ARB}
+
+    MONGODB_USER_BASE: ${env:MONGODB_USER_BASE}
+    MONGODB_PWD_BASE: ${env:MONGODB_PWD_BASE}
+
+    MONGODB_USER_BLAST: ${env:MONGODB_USER_BLAST}
+    MONGODB_PWD_BLAST: ${env:MONGODB_PWD_BLAST}
+
+    MONGODB_USER_BSC: ${env:MONGODB_USER_BSC}
+    MONGODB_PWD_BSC: ${env:MONGODB_PWD_BSC}
+
+    MONGODB_USER_PLASMA: ${env:MONGODB_USER_PLASMA}
+    MONGODB_PWD_PLASMA: ${env:MONGODB_PWD_PLASMA}
+
+    ALCHEMY_API_KEY: ${env:ALCHEMY_API_KEY}
+    ANKR_API_KEY: ${env:ANKR_API_KEY}
+    BLAST_API_KEY: ${env:BLAST_API_KEY}
+    INFURA_PROJECT_ID: ${env:INFURA_PROJECT_ID}
+    MORALIS_API_KEY: ${env:MORALIS_API_KEY}
+    CHAINSTACK_API_KEY: ${env:CHAINSTACK_API_KEY}
+    
+    TENDERLY_URL_BASE: ${env:TENDERLY_URL_BASE}
+
+    WALLET_ADDRESS: ${env:WALLET_ADDRESS}
+    WALLET_PRIVATE_KEY: ${env:WALLET_PRIVATE_KEY}
+
+    ARBISCAN_API_KEY_TOKEN: ${env:ARBISCAN_API_KEY_TOKEN}
+    BASESCAN_API_KEY_TOKEN: ${env:BASESCAN_API_KEY_TOKEN}
+    BLASTSCAN_API_KEY_TOKEN: ${env:BLASTSCAN_API_KEY_TOKEN}
+    BSCSCAN_API_KEY_TOKEN: ${env:BSCSCAN_API_KEY_TOKEN}
+    
+    TELEGRAM_BOT_TOKEN: ${env:TELEGRAM_BOT_TOKEN}
+
+    OPENAI_API_KEY: ${env:OPENAI_API_KEY}
+
+plugins:
+  - serverless-webpack
+  - serverless-plugin-log-retention
+
+custom:
+  logRetentionInDays: 30
+
+  webpack:
+    webpackConfig: dist/lambdas/serverless/webpack.config.cjs
+    includeModules: true
+    packager: 'npm'
+    # webpackIncludeModules: true
+    
+package:
+  individually: true
+
+  patterns:
+    - '.DS_Store'
+
+    - '!tsconfig.json'
+
+    - '.git/**'
+    - '!.gitignore'
+
+    - '!.dockerignore'
+    - '!Dockerfile'
+
+    - '!src/**'
+    - '!dump/**'
+
+    - 'hardhat'
+
+    # - '!node_modules/**'
+    # - 'node_modules/mongoose/**'
+    # - 'node_modules/bson/**'
+    # - 'node_modules/kareem/**'
+    # - 'node_modules/mongodb/**'
+    # - 'node_modules/mpath/**'
+    # - 'node_modules/mquery/**'
+    # - 'node_modules/ms/**'
+    # - 'node_modules/sift/**'
+    # - 'node_modules/mongodb-connection-string-url/**'
+    
+    - '!README.md'
+    - '!common.txt'
+    - '!errors.txt'
+    - '!data.txt'
+    - '!notes.txt'
+    - '!trends-explorer-ec2.pem'
+
+functions:
+  ##
+  ## Clean up database...
+  ##
+
+  cleanUpDatabaseBase:
+    handler: dist/lambdas/serverless/cleanUpDatabase.default
+    environment:
+      CHAIN_ID: 8453
+    timeout: 60
+    events:
+      - schedule: rate(5 minutes) # Every 5 minutes
+
+  cleanUpDatabaseBsc:
+    handler: dist/lambdas/serverless/cleanUpDatabase.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: rate(5 minutes) # Every 5 minutes
+
+  # sendStatReport:
+  #   handler: dist/lambdas/serverless/sendStatReport.default
+  #   environment:
+  #     CHAIN_ID: 8453
+  #   timeout: 60
+  #   events:
+  #     - schedule: cron(0 23 * * ? *) # Every day at 7:00 pm
+
+  # handleSwapMovementBase:
+  #   handler: dist/lambdas/serverless/handleSwapMovementForTokens.default
+  #   environment:
+  #     CHAIN_ID: 8453
+  #   timeout: 60
+  #   events:
+  #     - schedule: rate(10 minutes) # Every 10 minutes
+
+  ##
+  ## Get Prices...
+  ##
+
+  getPricesBase:
+    handler: dist/lambdas/serverless/getPrices.default
+    environment:
+      CHAIN_ID: 8453
+    timeout: 60
+    events:
+      - schedule: rate(10 minutes) # Every 10 minutes
+
+  getPricesBsc:
+    handler: dist/lambdas/serverless/getPrices.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: rate(10 minutes) # Every 10 minutes
+
+  getPortfolioBalanceBase:
+    handler: dist/lambdas/serverless/getPortfolioBalance.default
+    environment:
+      CHAIN_ID: 8453
+    timeout: 60
+    events:
+      - schedule: cron(0 * * * ? *) # Every hour
+
+  getPortfolioBalanceBsc:
+    handler: dist/lambdas/serverless/getPortfolioBalance.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: cron(0 * * * ? *) # Every hour
+
+  # rescueUnsavedHoldingsBase:
+  #   handler: dist/lambdas/serverless/rescueUnsavedHoldings.default
+  #   environment:
+  #     CHAIN_ID: 8453
+  #   timeout: 60
+  #   events:
+  #     - schedule: rate(2 minutes) # Every 2 minutes
+
+  rescueUnsavedHoldingsBsc:
+    handler: dist/lambdas/serverless/rescueUnsavedHoldings.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: rate(2 minutes) # Every 2 minutes
+
+  sendTradingReport:
+    handler: dist/lambdas/serverless/sendTradingReport.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: cron(0 5,17 * * ? *) # Every 12 hours
+
+  sendUpdates:
+    handler: dist/lambdas/serverless/sendUpdates.default
+    environment:
+      CHAIN_ID: 56
+    timeout: 60
+    events:
+      - schedule: cron(0 5,11,17,23 * * ? *) # Every 6 hours

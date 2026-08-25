@@ -1,0 +1,73 @@
+{
+  "containerDefinitions": [
+      {
+          "name": "explorer-base-scanSellOpps",
+          "image": "519676593554.dkr.ecr.us-east-1.amazonaws.com/explorer",
+          "cpu": 256,
+          "memory": 512,
+          "memoryReservation": 512,
+          "portMappings": [
+              {
+                  "name": "explorer-base-80-tcp",
+                  "containerPort": 80,
+                  "hostPort": 80,
+                  "protocol": "tcp",
+                  "appProtocol": "http"
+              }
+          ],
+          "essential": true,
+          "environment": [
+              {
+                  "name": "PORTFOLIO_ADDRESS",
+                  "value": "0xb15645B4702d8d63B532C5D6a340448a2CE3b645"
+              },
+              {
+                  "name": "CHAIN_ID",
+                  "value": "8453"
+              },
+              {
+                  "name": "INSTANCE_FUNCTION_TYPE",
+                  "value": "scanSellOpps"
+              }
+          ],
+          "environmentFiles": [
+              {
+                  "value": "arn:aws:s3:::explorer-evm/production.env",
+                  "type": "s3"
+              }
+          ],
+          "mountPoints": [],
+          "volumesFrom": [],
+          "ulimits": [],
+          "logConfiguration": {
+              "logDriver": "awslogs",
+              "options": {
+                  "awslogs-group": "/ecs/explorer-base-scanSellOpps",
+                  "mode": "non-blocking",
+                  "awslogs-create-group": "true",
+                  "max-buffer-size": "25m",
+                  "awslogs-region": "us-east-1",
+                  "awslogs-stream-prefix": "ecs"
+              },
+              "secretOptions": []
+          },
+          "systemControls": []
+      }
+  ],
+  "family": "explorer-base-scanSellOpps",
+  "taskRoleArn": "arn:aws:iam::519676593554:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::519676593554:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "volumes": [],
+  "placementConstraints": [],
+  "requiresCompatibilities": [
+      "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+      "cpuArchitecture": "ARM64",
+      "operatingSystemFamily": "LINUX"
+  },
+  "tags": []
+}

@@ -1,0 +1,42 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# build output
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# next.js
+next-env.d.ts
+.vercel
+
+# testing
+coverage/
+
+# turbo (when you add it)
+.turbo/
+
+# env
+.env
+.env.*
+!.env.example
+
+# logs
+*-debug.log*
+logs/
+
+# editor / os
+.DS_Store
+.idea/
+*.pem
+*.key
+
+# Database dumps
+dump/
+
+# package managers (legacy)
+jspm_packages/

@@ -1,0 +1,29 @@
+MongoDB:
+- Connect to MongoDB locally: mongosh <db-name>
+- Delete db once connected: db.dropDatabase()
+- View options: db.help()
+- Start on MacOS: brew services start mongodb-community
+- Stop on MacOS: brew services stop mongodb-community
+- Create dump file: mongodump --uri mongodb+srv://admin:<PASSWORD>@main.r12qw3b.mongodb.net/main
+- Import from dump file: mongorestore --uri mongodb://localhost:27017/trends dump/main
+- Update many: db.employee.updateMany({}, {$set: {salary: 50000}})
+- Update database from production data: node ./dist/scripts/updateDatabase.js
+
+Hardhat:
+- Compile: npx hardhat Compile
+- Deploy: npx hardhat run scripts/deploySpreadCalculator.js --network matic
+- Deploy: npx hardhat run scripts/deployTokenuity.js --network base
+
+Serverless:
+- Deploy: serverless deploy --stage production
+- Add Pair: serverless invoke local -f addPair -d '["0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"]'
+- Fake trxn: serverless invoke local -f updatePortfolio --data '{ "queryStringParameters": {"tokenIn":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", "tokenOut": "0x6B175474E89094C44Da98b954EedeAC495271d0F", "amountIn":"1000000000000000000"}}'
+
+# Docker
+- Build image: docker build -t explorer -f Dockerfile.dev .
+- Enter running container: docker exec -it explorer-c /bin/sh
+
+
+
+"@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.17.0",

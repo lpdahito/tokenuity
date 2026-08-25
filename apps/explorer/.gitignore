@@ -1,0 +1,17 @@
+# Hardhat
+src/hardhat/cache/
+src/hardhat/artifacts/
+
+# TypeChain
+src/hardhat/typechain/
+src/hardhat/typechain-types/
+
+# solidity-coverage
+src/hardhat/coverage/
+src/hardhat/coverage.json
+
+# Serverless
+.serverless/
+
+# Scratch
+notes.txt
