@@ -1,10 +1,26 @@
-import { BadgeCheck, ChevronDown, Ellipsis, ExternalLink, Wallet } from "lucide-react";
+import { BadgeCheck, ExternalLink, Wallet } from "lucide-react";
 
-import { Main } from "@/components/holdings/Main";
-import { Stats } from "@/components/holdings/Stats";
-import { PoolsTransactions } from "@/components/holdings/PoolsTransactions";
+import { notFound } from 'next/navigation'
 
-export default async function Home() {
+import { getToken } from '@tokenuity/store'
+
+import { Main } from "@/components/tokens/Main";
+import { Stats } from "@/components/tokens/Stats";
+import { PoolsTransactions } from "@/components/tokens/PoolsTransactions";
+
+export default async function Home({
+  params
+}: {
+  params: Promise<{ address: string }>
+}) {
+
+  const { address } = await params
+
+  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) notFound()
+  
+  const token = await getToken(address)
+  if (!token) notFound()
+
   return (
     <div className="flex flex-col items-center justify-start w-full">
       <div className="flex flex-col justify-between items-center w-full max-w-[492px] pt-[100px] gap-[10px]">
@@ -14,11 +30,11 @@ export default async function Home() {
         </div>
 
         <h1 className="font-display font-bold text-[32px]">
-          Hyperliquid (HYPE)
+          { token.name } ({ token.symbol })
         </h1>
 
         <div className="flex flex-row justify-center items-center gap-[2px] text-fg-muted text-[14px] text-center">
-          <span>0xf199e2A67a3862A4d1178C697aBb8e76eF7C681b</span>
+          <span>{ token.address }</span>
           <ExternalLink className="mt-[-3px]" size={13} strokeWidth={2.5} />
         </div>
 

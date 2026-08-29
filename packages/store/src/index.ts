@@ -7,5 +7,5 @@ export { TokenModel } from './models/Token'
 // export { Pool } from './models/pool'
 
 // queries
-// export * from './queries/tokens'
+export * from './queries/tokens'
 // export * from './queries/pools'
