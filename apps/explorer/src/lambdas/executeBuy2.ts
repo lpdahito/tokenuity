@@ -4,7 +4,7 @@ import type { HydratedDocument } from 'mongoose'
 
 import { Document } from 'mongodb'
 
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { contracts } from './../contracts/contracts.js'
 

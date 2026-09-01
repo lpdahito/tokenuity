@@ -13,7 +13,7 @@ import isLocal from './../config/isLocal.js'
 import { providers } from '../config/provider.js'
 import { Logger } from '../config/logger.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { CheckTypes } from './../types.js'
 

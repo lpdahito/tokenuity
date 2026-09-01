@@ -9,7 +9,9 @@ import { contracts } from '../contracts/contracts.js'
 
 import extractData from './../jobs/extractDataForFindPools.js'
 
-import * as models from '../models/models.js'
+// import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
+
 
 import { IPrice } from './../types.js'
 

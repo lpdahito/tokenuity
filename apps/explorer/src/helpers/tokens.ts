@@ -13,7 +13,7 @@ import { providers, wallets } from '../config/provider.js'
 
 import { Swap } from '../helpers/swaps.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import {
   DexProtocols, Launchpads, SwapEvent, EventToken, IPool, IToken, Routers,

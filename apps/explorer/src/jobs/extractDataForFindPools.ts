@@ -12,9 +12,9 @@ import { Logger } from '../config/logger.js'
 import { extractPoolDataFromLog, savePoolDataFromExtractions } from './../helpers/extractions.js'
 import { prepareTokensFromPoolExtractions } from './../helpers/tokens.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
-import { CheckTypes } from './../types.js'
+import { CheckTypes } from '@tokenuity/contracts'
 import { PoolsFromExtractions } from './../types/poolExtractionTypes.js'
 
 const {

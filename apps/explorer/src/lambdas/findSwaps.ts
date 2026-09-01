@@ -9,7 +9,7 @@ import { contracts } from '../contracts/contracts.js'
 
 import updatePoolsFromSwaps from './../jobs/updatePoolsFromSwaps.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { IPrice } from './../types.js'
 
