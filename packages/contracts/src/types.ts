@@ -39,6 +39,48 @@ export enum Triggers {
   time
 }
 
+export interface IBuy {
+  tokenAddress: string,
+  tx: string | null,
+  status: string, // pending, success, failed, tracked
+  attempts: number,
+  tokenAgeOnTx: number,
+  amount: string,
+  otherAmount: string,
+  amountInUsd: number,
+  swapIndex: number,
+  liquidityInBase?: string,
+  liquidityInUsd?: number,
+  baseTokenPrice: string,
+  swapCount?: number,
+  swapsPerMinute?: number,
+  holderCount?: number,
+  tokenHoldersWithOne?: number,
+  tokenHoldersWithTwenty?: number,
+  tokenHoldersWithOneHundred?: number,
+  tokenHoldersWithOneThousand?: number,
+  coinHoldersWithOne?: number,
+  coinHoldersWithTwenty?: number,
+  coinHoldersWithOneHundred?: number,
+  coinHoldersWithOneThousand?: number,
+  holderCountRatio?: number,
+  buyCountPct?: number,
+  buySellVolumeRatio?: number,
+  // buyVolumeInUsdMedian?: number | null,
+  // buyVolumeInUsdMean?: number | null,
+  // buyVolumeInUsdIqr?: number | null,
+  // sellVolumeInUsdMedian?: number | null,
+  // sellVolumeInUsdMean?: number | null,
+  // sellVolumeInUsdIqr?: number | null,
+  volumeInUsdMedian?: number | null,
+  volumeInUsdMean?: number | null,
+  volumeInUsdIqr?: number | null,
+  messages: Array<string>,
+  updatedAt: number,
+  createdAt: number,
+  boughtAt: number | null
+}
+
 export interface ICheck {
   type: CheckTypes
   execTime: string
@@ -50,6 +92,14 @@ export interface ICheck {
   loopExecTime?: string
   portfolioBalance?: string
   rejectedPoolCount?: number
+}
+
+export interface ICreator {
+  address: string
+  failCount: number
+  createdAt: number
+  successCount: number
+  // tokens: Array<string>
 }
 
 export interface IHolding {
@@ -96,6 +146,12 @@ export interface IPortfolio {
   auto: boolean,
   createdAt: number,
   updatedAt: number
+}
+
+export interface IPrice {
+  baseToken: string,
+  virtual?: string,
+  createdAt: number
 }
 
 export interface ISell {

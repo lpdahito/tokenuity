@@ -4,7 +4,7 @@ import type { HydratedDocument } from 'mongoose'
 
 import { Document } from 'mongodb'
 
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { contracts } from './../contracts/contracts.js'
 
@@ -26,8 +26,10 @@ import { getTokenCreator, getTokenSourceCode, isVerified } from './../helpers/to
 import { lastPrice, baseToken as getBaseToken, quoteToken as getQuoteToken } from './../helpers/pools.js'
 
 import {
-  DexProtocols, IBuy, IHolding, IPool, IPortfolio, ISell, ISnippet, IToken, Launchpads, LimitsForSwaps, Routers, SwapResponse, Triggers
-} from './../types.js'
+  DexProtocols, IBuy, IHolding, IPool, IPortfolio, ISell, ISnippet, IToken, Launchpads, Triggers
+} from '@tokenuity/contracts'
+
+import { LimitsForSwaps, SwapResponse } from './../types.js'
 
 const {
   BuyModel: Buy,

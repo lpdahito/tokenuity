@@ -25,7 +25,8 @@ import { getLiquidityInBase, buyCount, compute } from './../helpers/pools.js'
 import { findOrCreateSnippet, getSourceCodeData } from './../helpers/snippets.js'
 import { getTokenCreator, getTokenSourceCode, isVerified } from './../helpers/tokens.js'
 
-import { DexProtocols, IBuy, IHolding, IPool, IPortfolio, ISnippet, IToken, ITokenSwap, Launchpads, LimitsForSwaps, Routers, SwapResponse } from './../types.js'
+import { DexProtocols, IBuy, IHolding, IPool, IPortfolio, ISnippet, IToken, ITokenSwap, Launchpads } from '@tokenuity/contracts'
+import { LimitsForSwaps, Routers, SwapResponse } from './../types.js'
 
 const {
   SellModel: Sell,

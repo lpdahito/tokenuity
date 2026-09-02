@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { BigNumber } from 'bignumber.js'
 
 import { contracts } from '../contracts/contracts.js'
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import isLocal from '../config/isLocal.js'
 
@@ -23,7 +23,8 @@ const {
 import tradingParams from '../config/tradingParams.js'
 
 import type { HydratedDocument } from 'mongoose'
-import type { EventToken, ExecuteSellParams, ExecuteSwapParams, IHolding, IPortfolio, IToken, LimitsForSwaps, SwapMovementForToken } from '../types.js'
+import type { IHolding, IPortfolio, IToken } from '@tokenuity/contracts'
+import type { EventToken, ExecuteSellParams, ExecuteSwapParams, LimitsForSwaps, SwapMovementForToken } from '../types.js'
 
 interface Call3 {
   target: string,

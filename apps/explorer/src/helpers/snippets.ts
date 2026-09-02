@@ -9,9 +9,9 @@ import { getSnippetTrustScore } from './../helpers/ai.js'
 
 import { contracts } from '../contracts/contracts.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
-import type { ISnippet } from '../types.js'
+import type { ISnippet } from '@tokenuity/contracts'
 
 interface Snippet {
   scope: string

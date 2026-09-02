@@ -2,9 +2,9 @@ import type { HydratedDocument } from 'mongoose'
 
 import { Logger } from '../config/logger.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
-import type { IBuy, IToken, } from '../types.js'
+import type { IBuy, IToken, } from '@tokenuity/contracts'
 
 const {
   BuyModel: Buy

@@ -10,9 +10,10 @@ import { Logger } from '../config/logger.js'
 import addresses from '../config/addresses.js'
 import { providers, wallets } from '../config/provider.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
-import { IPool, IToken, DexProtocols, SyncEvent } from '../types.js'
+import { IPool, IToken, DexProtocols } from '@tokenuity/contracts'
+import { SyncEvent } from '../types.js'
 
 interface Call3 {
   target: string,

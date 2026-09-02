@@ -15,8 +15,10 @@ import { Swap } from '../helpers/swaps.js'
 
 import * as models from '@tokenuity/store'
 
+import { DexProtocols, Launchpads, IPool, IToken } from '@tokenuity/contracts'
+
 import {
-  DexProtocols, Launchpads, SwapEvent, EventToken, IPool, IToken, Routers,
+  SwapEvent, EventToken, Routers,
   TokensFromExtractions, TokenUpdateData, SwapFromExtraction, UnfollowedTokenUpdateData
 } from '../types.js'
 

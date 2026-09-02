@@ -2,9 +2,9 @@ import type { HydratedDocument } from 'mongoose'
 
 import { Logger } from '../config/logger.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
-import type { ICreator, } from '../types.js'
+import type { ICreator, } from '@tokenuity/contracts'
 
 const {
   CreatorModel: Creator
