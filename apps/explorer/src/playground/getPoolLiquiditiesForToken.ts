@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 
 import * as mongoose from 'mongoose'
 
-import * as models from '../models/models'
+import * as models from '@tokenuity/store'
 
 import { databaseUrl } from '../config/databaseUrl'
 import addresses from '../config/addresses'

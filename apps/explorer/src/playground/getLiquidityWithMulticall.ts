@@ -12,7 +12,7 @@ import addresses from '../config/addresses'
 import { getBaseTokenPrice } from '../helpers/oracle'
 
 import { contracts } from '../contracts/contracts'
-import * as models from '../models/models'
+import * as models from '@tokenuity/store'
 
 const {
   PoolModel: Pool,

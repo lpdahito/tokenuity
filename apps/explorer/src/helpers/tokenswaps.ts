@@ -8,7 +8,7 @@ import isLocal from '../config/isLocal.js'
 import { Logger } from '../config/logger.js'
 import addresses from '../config/addresses.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import tradingParams from '../config/tradingParams.js'
 

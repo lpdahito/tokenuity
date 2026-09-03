@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { DexProtocols, LimitsForSwaps } from '../types.js'
+import type { DexProtocols, LimitsForSwaps } from '@tokenuity/contracts'
 
 const TradingParamsSchema = new Schema<LimitsForSwaps>({
   amountIn: { type: Number },

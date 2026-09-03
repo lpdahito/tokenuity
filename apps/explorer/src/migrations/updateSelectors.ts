@@ -2,7 +2,7 @@
 
 import * as mongoose from 'mongoose'
 
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 const {
   SelectorModel: Selector,

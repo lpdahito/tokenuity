@@ -7,7 +7,7 @@ import { Logger } from '../config/logger.js'
 
 import { getBaseTokenPrice, getVirtualPrice } from './../helpers/oracle.js'
 
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { IPrice } from './../types.js'
 

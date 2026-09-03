@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { ISelector } from '../types.js'
+import type { ISelector } from '@tokenuity/contracts'
 
 const SelectorSchema = new Schema<ISelector>({
   body: { type: String },

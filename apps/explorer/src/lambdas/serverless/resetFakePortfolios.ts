@@ -3,7 +3,7 @@ import * as mongoose from 'mongoose'
 import { databaseUrl } from '../../config/databaseUrl.js'
 import tradingParams from '../../config/tradingParams.js'
 
-import * as models from '../../models/models.js'
+import * as models from '@tokenuity/store'
 
 const {
   HoldingModel: Holding,

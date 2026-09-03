@@ -5,7 +5,7 @@ import { performance } from 'perf_hooks'
 import * as mongoose from 'mongoose'
 
 // // Local dependencies
-import * as models from '../models/models'
+import * as models from '@tokenuity/store'
 
 import { databaseUrl } from '../config/databaseUrl'
 

@@ -2,7 +2,7 @@
 
 import * as mongoose from 'mongoose'
 
-import * as models from './../../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { wallets } from './../../config/provider.js'
 import { databaseUrl } from './../../config/databaseUrl.js'

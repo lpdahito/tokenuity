@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { ITradingReport } from '../types.js'
+import { ITradingReport } from '@tokenuity/contracts'
 
 // TypeScript Interface for the Subdocument
 interface IResult {

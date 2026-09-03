@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose'
 import parser from '@solidity-parser/parser'
 
-import * as models from './../../models/models.js'
+import * as models from '@tokenuity/store'
 
 import addresses from './../../config/addresses.js'
 import { databaseUrl } from './../../config/databaseUrl.js'

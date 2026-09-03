@@ -6,7 +6,7 @@ import { chain } from './../../config/chain.js'
 import { providers } from './../../config/provider.js'
 import { databaseUrl } from './../../config/databaseUrl.js'
 
-import * as models from './../../models/models.js'
+import * as models from '@tokenuity/store'
 
 const {
   PortfolioBalanceModel: PortfolioBalance

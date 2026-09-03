@@ -4,7 +4,7 @@
 // process.env['NODE_ENV'] = 'production'
 
 import * as mongoose from 'mongoose'
-import * as models from '../models/models'
+import * as models from '@tokenuity/store'
 
 import { databaseUrl } from '../config/databaseUrl'
 

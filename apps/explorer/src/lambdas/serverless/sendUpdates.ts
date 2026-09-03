@@ -1,7 +1,7 @@
 // docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=56 -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/lambdas/serverless/sendUpdates.js").default()'
 
 import * as mongoose from 'mongoose'
-import * as models from './../../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { databaseUrls } from './../../config/databaseUrl.js'
 

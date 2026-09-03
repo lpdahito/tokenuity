@@ -33,6 +33,34 @@ export enum Launchpads {
   zora      = 6
 }
 
+export interface LimitsForSwaps {
+  amountIn: number,
+  takeProfit: number,
+  stopLoss: number,
+  timeMax: number,
+  tryCountMax: number,
+  protocols: Array<DexProtocols>,
+  mustBeVerified: boolean,
+  mustBeRenounced: boolean,
+  ownerMustNotBeNull: boolean,
+  mustNotContainEmojis: boolean,
+  lockedPercentageMin: number,
+  tokenAgeMin: number,
+  tokenAgeMax: number,
+  swapCountMin: number,
+  swapCountMax: number,
+  holderCountMin: number,
+  swapsPerMinuteMin: number,
+  liquidityInUsdMin: number,
+  liquidityInUsdMax: number,
+  buyCountPctMin: number,
+  buyCountPctMax: number
+  buySellVolumeRatioMin: number,
+  buySellVolumeRatioMax: number,
+  buyVolumeInUsdMedianMin: number,
+  unwanted: Array<string>
+}
+
 export enum Triggers {
   takeProfit,
   stopLoss,
@@ -113,6 +141,21 @@ export interface IHolding {
   createdAt: number,
 }
 
+export interface ILog {
+  logType: string, // totalSwapCount, tokenSwapCount, tokenTracked
+  token?: {
+    name: string,
+    symbol: string,
+    address: string,
+    createdAt?: number,
+  },
+  pump?: boolean,
+  swapCount: number,
+  buyCount: number,
+  sellCount: number,
+  createdAt: number,
+}
+
 export interface IPool {
   fee: number
   block: number
@@ -148,10 +191,29 @@ export interface IPortfolio {
   updatedAt: number
 }
 
+export interface IPortfolioBalance {
+  body: string
+  wallet: string
+  createdAt: number
+}
+
 export interface IPrice {
   baseToken: string,
   virtual?: string,
   createdAt: number
+}
+
+export interface ISelector {
+  body: string,
+  unwanted: boolean | null,
+  goodCount: number,
+  badCount: number,
+  lastGoods?: Array<string>,
+  lastBads?: Array<string>,
+  lastGoodTime?: number,
+  lastBadTime?: number,
+  updatedAt: number,
+  createdAt: number,
 }
 
 export interface ISell {
@@ -205,6 +267,15 @@ export interface ISnippet {
   trustScore: number | null
 }
 
+export interface IStatReport {
+  growth: string
+  txCount: number
+  rugPulls: number
+  successfulExits: number
+  highestMultiple: number
+  createdAt: number
+}
+
 export interface IToken {
   name: string
   block: number
@@ -240,4 +311,13 @@ export interface ITokenSwap {
   timestamp: number
   // sender: string | null
   // recipient: string | null
+}
+
+export interface ITradingReport {
+  count: number
+  profit: string
+  createdAt: number
+  bestProfit: string
+  bestMultiple: number
+  results: Array<{ count: number, multiple: number, profit: string }>
 }

@@ -4,7 +4,7 @@
   "private": true,
   "main": "./dist/app.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "dev": "tsx watch src/app.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/node-cron": "^3.0.11",
     "dotenv": "^16.4.1",
+    "tsup": "^8.3.0",
     "vitest": "^2.1.0"
   }
 }

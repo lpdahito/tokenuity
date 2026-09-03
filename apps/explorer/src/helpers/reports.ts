@@ -1,7 +1,7 @@
 // docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=8453 -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/playground/ai/createReport.js").default()'
 // docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=56 -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/playground/ai/createReport.js").default()'
 
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { databaseUrl } from './../config/databaseUrl'
 

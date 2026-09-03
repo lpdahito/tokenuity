@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import { IStatReport } from '../types.js'
+import { IStatReport } from '@tokenuity/contracts'
 
 const StatReportSchema = new Schema<IStatReport>({
   txCount: { type: Number, default: 0 },

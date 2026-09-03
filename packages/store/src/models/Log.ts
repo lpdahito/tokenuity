@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { ILog } from '../types.js'
+import type { ILog } from '@tokenuity/contracts'
 
 const LogSchema = new Schema<ILog>({
   logType: { type: String, required: true },

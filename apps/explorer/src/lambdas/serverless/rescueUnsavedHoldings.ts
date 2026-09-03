@@ -13,7 +13,7 @@ import { updatePortfolio } from './../../helpers/portfolios.js'
 
 import { contracts } from './../../contracts/contracts.js'
 
-import * as models from './../../models/models.js'
+import * as models from '@tokenuity/store'
 
 const {
   BuyModel: Buy,

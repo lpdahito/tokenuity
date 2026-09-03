@@ -2,7 +2,7 @@
 // docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=8453 -v /Users/lpdahito/Projects/tokenuity/trends/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/lambdas/serverless/removeTokens.js").default()'
 
 import * as mongoose from 'mongoose'
-import * as models from '../../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { databaseUrls } from '../../config/databaseUrl.js'
 import { addresses } from '../../config/addresses.js'

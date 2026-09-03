@@ -1,7 +1,7 @@
 // docker run -it --rm --link mongo-server --env-file .env -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/playground/databaseStuff.js").default()'
 
 import * as mongoose from 'mongoose'
-import * as models from './../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { databaseUrl } from './../config/databaseUrl.js'
 

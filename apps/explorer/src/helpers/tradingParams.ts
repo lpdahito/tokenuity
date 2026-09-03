@@ -3,7 +3,7 @@ import type { HydratedDocument } from 'mongoose'
 import { Logger } from '../config/logger.js'
 import tradingParamsFromConfig from '../config/tradingParams.js'
 
-import * as models from '../models/models.js'
+import * as models from '@tokenuity/store'
 
 import { DexProtocols, SwapEvent, EventToken, LimitsForSwaps } from '../types.js'
 

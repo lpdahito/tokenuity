@@ -6,8 +6,8 @@
 
 import * as cron from 'node-cron'
 
-import * as mongoose from 'mongoose'
-import * as models from './models/models.js'
+import * as models from '@tokenuity/store'
+import { connect } from '@tokenuity/store'
 
 import { chain } from './config/chain.js'
 import isLocal from './config/isLocal.js'
@@ -52,9 +52,7 @@ const main = async () => {
   }
 
   try {
-    mongoose.set('strictQuery', false)
-    await mongoose.connect(databaseUrl, { autoIndex: false })
-
+    await connect()
     console.log('Connected to database.')
 
     switch (process.env.INSTANCE_FUNCTION_TYPE) {

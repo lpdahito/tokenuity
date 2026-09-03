@@ -7,7 +7,7 @@ import { databaseUrl } from '../../config/databaseUrl.js'
 
 import { getBaseTokenPrice, getVirtualPrice } from '../../helpers/oracle.js'
 
-import * as models from '../../models/models.js'
+import * as models from '@tokenuity/store'
 
 const {
   PriceModel: Price

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose'
-import type { IPortfolioBalance } from '../types.js'
+import type { IPortfolioBalance } from '@tokenuity/contracts'
 
 const PortfolioBalanceSchema = new Schema<IPortfolioBalance>({
   body: { type: String },
