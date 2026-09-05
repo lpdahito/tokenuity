@@ -12,7 +12,7 @@ import { providers, wallets } from '../config/provider.js'
 
 import * as models from '@tokenuity/store'
 
-import { IPool, IToken, DexProtocols } from '@tokenuity/contracts'
+import { IPool, IToken, DexProtocols } from '@tokenuity/types'
 import { SyncEvent } from '../types.js'
 
 interface Call3 {

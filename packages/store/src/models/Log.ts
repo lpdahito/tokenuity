@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { ILog } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { ILog } from '@tokenuity/types'
 
 const LogSchema = new Schema<ILog>({
   logType: { type: String, required: true },
@@ -14,5 +14,6 @@ const LogSchema = new Schema<ILog>({
   }
 })
 
-const LogModel = model<ILog>('Log', LogSchema)
-export { LogModel }
+export const LogModel =
+  (mongoose.models.Log as mongoose.Model<ILog>) ??
+  mongoose.model<ILog>('Log', LogSchema)

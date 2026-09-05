@@ -12,7 +12,7 @@ import addresses from './../config/addresses.js'
 
 import * as models from '@tokenuity/store'
 
-import { DexProtocols } from '@tokenuity/contracts'
+import { DexProtocols } from '@tokenuity/types'
 
 import {
   TokensFromExtractions, TokenSwapInsertData, UnfollowedTokenUpdateData

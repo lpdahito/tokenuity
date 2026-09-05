@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { IPortfolio } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { IPortfolio } from '@tokenuity/types'
 
 const PortfolioSchema = new Schema<IPortfolio>({
   wallet: { type: String },
@@ -17,5 +17,6 @@ const PortfolioSchema = new Schema<IPortfolio>({
 
 PortfolioSchema.index({ wallet: 1 }, { unique: true })
 
-const PortfolioModel = model<IPortfolio>('Portfolio', PortfolioSchema)
-export { PortfolioModel }
+export const PortfolioModel =
+  (mongoose.models.Portfolio as mongoose.Model<IPortfolio>) ??
+  mongoose.model<IPortfolio>('Portfolio', PortfolioSchema)

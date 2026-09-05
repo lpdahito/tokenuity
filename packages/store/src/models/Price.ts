@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { IPrice } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { IPrice } from '@tokenuity/types'
 
 const PriceSchema = new Schema<IPrice>({
   baseToken: { type: String },
@@ -9,5 +9,6 @@ const PriceSchema = new Schema<IPrice>({
 
 PriceSchema.index({ createdAt: -1 })
 
-const PriceModel = model<IPrice>('Price', PriceSchema)
-export { PriceModel, IPrice }
+export const PriceModel =
+  (mongoose.models.Price as mongoose.Model<IPrice>) ??
+  mongoose.model<IPrice>('Price', PriceSchema)

@@ -11,7 +11,7 @@ import { contracts } from '../contracts/contracts.js'
 
 import * as models from '@tokenuity/store'
 
-import type { ISnippet } from '@tokenuity/contracts'
+import type { ISnippet } from '@tokenuity/types'
 
 interface Snippet {
   scope: string

@@ -4,7 +4,7 @@ import { Logger } from '../config/logger.js'
 
 import * as models from '@tokenuity/store'
 
-import type { IBuy, IToken, } from '@tokenuity/contracts'
+import type { IBuy, IToken, } from '@tokenuity/types'
 
 const {
   BuyModel: Buy

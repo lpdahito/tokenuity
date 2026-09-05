@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { IPortfolioBalance } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { IPortfolioBalance } from '@tokenuity/types'
 
 const PortfolioBalanceSchema = new Schema<IPortfolioBalance>({
   body: { type: String },
@@ -9,5 +9,6 @@ const PortfolioBalanceSchema = new Schema<IPortfolioBalance>({
 
 // PortfolioBalanceSchema.index({ createdAt: -1 })
 
-const PortfolioBalanceModel = model<IPortfolioBalance>('PortfolioBalance', PortfolioBalanceSchema)
-export { PortfolioBalanceModel, IPortfolioBalance }
+export const PortfolioBalanceModel =
+  (mongoose.models.PortfolioBalance as mongoose.Model<IPortfolioBalance>) ??
+  mongoose.model<IPortfolioBalance>('PortfolioBalance', PortfolioBalanceSchema)

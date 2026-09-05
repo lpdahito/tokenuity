@@ -27,7 +27,7 @@ import { lastPrice, baseToken as getBaseToken, quoteToken as getQuoteToken } fro
 
 import {
   DexProtocols, IBuy, IHolding, IPool, IPortfolio, ISell, ISnippet, IToken, Launchpads, Triggers
-} from '@tokenuity/contracts'
+} from '@tokenuity/types'
 
 import { LimitsForSwaps, SwapResponse } from './../types.js'
 

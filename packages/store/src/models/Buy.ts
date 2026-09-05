@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { IBuy } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { IBuy } from '@tokenuity/types'
 
 /** 
  * Codes:
@@ -60,5 +60,9 @@ const BuySchema = new Schema<IBuy>({
 
 BuySchema.index({ tokenAddress: 1 }, { unique: true })
 
-const BuyModel = model<IBuy>('Buy', BuySchema)
-export { BuyModel }
+export const BuyModel =
+  (mongoose.models.Buy as mongoose.Model<IBuy>) ??
+  mongoose.model<IBuy>('Buy', BuySchema)
+
+// const BuyModel = model<IBuy>('Buy', BuySchema)
+// export { BuyModel }

@@ -18,7 +18,7 @@ import { contracts } from '../contracts/contracts.js'
 import { sendDiscordMessage } from './../helpers/discord.js'
 import { baseToken as getBaseToken, quoteToken as getQuoteToken } from './../helpers/pools.js'
 
-import { DexProtocols, IPool } from '@tokenuity/contracts'
+import { DexProtocols, IPool } from '@tokenuity/types'
 import { SwapResponse } from '../types.js'
 
 export interface IUniversalRouterExecuteCall {

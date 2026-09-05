@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { DexProtocols, LimitsForSwaps } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { DexProtocols, LimitsForSwaps } from '@tokenuity/types'
 
 const TradingParamsSchema = new Schema<LimitsForSwaps>({
   amountIn: { type: Number },
@@ -29,5 +29,6 @@ const TradingParamsSchema = new Schema<LimitsForSwaps>({
   unwanted: { type: [String] },
 })
 
-const TradingParamsModel = model<LimitsForSwaps>('TradingParams', TradingParamsSchema)
-export { TradingParamsModel }
+export const TradingParamsModel =
+  (mongoose.models.TradingParams as mongoose.Model<LimitsForSwaps>) ??
+  mongoose.model<LimitsForSwaps>('TradingParams', TradingParamsSchema)

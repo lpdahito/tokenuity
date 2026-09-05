@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { IPool } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { IPool } from '@tokenuity/types'
 
 const PoolSchema = new Schema<IPool>({
   fee: { type: Number },
@@ -29,5 +29,6 @@ const PoolSchema = new Schema<IPool>({
 
 PoolSchema.index({ address: 1 }, { unique: true })
 
-const PoolModel = model<IPool>('Pool', PoolSchema)
-export { PoolModel }
+export const PoolModel =
+  (mongoose.models.Pool as mongoose.Model<IPool>) ??
+  mongoose.model<IPool>('Pool', PoolSchema)

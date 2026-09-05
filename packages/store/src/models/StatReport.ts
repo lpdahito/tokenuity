@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { IStatReport } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { IStatReport } from '@tokenuity/types'
 
 const StatReportSchema = new Schema<IStatReport>({
   txCount: { type: Number, default: 0 },
@@ -10,5 +10,6 @@ const StatReportSchema = new Schema<IStatReport>({
   createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) },
 })
 
-const StatReportModel = model<IStatReport>('StatReport', StatReportSchema)
-export { StatReportModel }
+export const StatReportModel =
+  (mongoose.models.StatReport as mongoose.Model<IStatReport>) ??
+  mongoose.model<IStatReport>('StatReport', StatReportSchema)

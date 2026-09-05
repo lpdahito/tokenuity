@@ -4,7 +4,7 @@ import { Logger } from '../config/logger.js'
 
 import * as models from '@tokenuity/store'
 
-import type { ICreator, } from '@tokenuity/contracts'
+import type { ICreator, } from '@tokenuity/types'
 
 const {
   CreatorModel: Creator

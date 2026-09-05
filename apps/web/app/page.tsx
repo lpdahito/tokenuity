@@ -1,7 +1,11 @@
-import { BadgeCheck, BadgeX, ChevronUp } from "lucide-react";
+import { notFound } from 'next/navigation'
 
-import { Head } from "@/components/portfolio/Head";
-import { HoldingItem } from "@/components/portfolio/Holding";
+import { Head } from "@/components/portfolio/Head"
+import { HoldingItem } from "@/components/portfolio/Holding"
+
+import { BadgeCheck, BadgeX, ChevronUp } from "lucide-react"
+
+import { getTokens } from '@tokenuity/store'
 
 type Holding = {
   id: number;
@@ -35,7 +39,12 @@ const holdings: Holding[] = [
   }
 ]
 
-export default function Home() {
+export default async function Home() {
+  const tokens = await getTokens()
+  if (!tokens) notFound()
+
+  console.log(tokens)
+
   return (
     <div className="flex flex-col items-center justify-start">
       <Head />

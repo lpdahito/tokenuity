@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { ITradingReport } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { ITradingReport } from '@tokenuity/types'
 
 // TypeScript Interface for the Subdocument
 interface IResult {
@@ -22,5 +22,6 @@ const TradingReportSchema = new Schema<ITradingReport>({
   createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) },
 })
 
-const TradingReportModel = model<ITradingReport>('TradingReport', TradingReportSchema)
-export { TradingReportModel }
+export const TradingReportModel =
+  (mongoose.models.TradingReport as mongoose.Model<ITradingReport>) ??
+  mongoose.model<ITradingReport>('TradingReport', TradingReportSchema)

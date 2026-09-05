@@ -13,7 +13,7 @@
     "container": "run-func ./dist/scripts/container.js default"
   },
   "dependencies": {
-    "@tokenuity/contracts": "workspace:*",
+    "@tokenuity/types": "workspace:*",
     "@tokenuity/store": "workspace:*",
     "@sentry/node": "^8.48.0",
     "@solidity-parser/parser": "^0.19.0",

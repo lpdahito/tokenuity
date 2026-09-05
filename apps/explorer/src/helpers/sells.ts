@@ -3,7 +3,7 @@ import type { HydratedDocument } from 'mongoose'
 import { Logger } from '../config/logger.js'
 
 import * as models from '@tokenuity/store'
-import type { IToken, ISell } from '@tokenuity/contracts'
+import type { IToken, ISell } from '@tokenuity/types'
 
 const {
   SellModel: Sell

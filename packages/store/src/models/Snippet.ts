@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { ISnippet } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { ISnippet } from '@tokenuity/types'
 
 const SnippetSchema = new Schema<ISnippet>({
   body: { type: String },
@@ -19,5 +19,6 @@ const SnippetSchema = new Schema<ISnippet>({
 
 SnippetSchema.index({ scope: 1, body: 1 }, { unique: true })
 
-const SnippetModel = model<ISnippet>('Snippet', SnippetSchema)
-export { SnippetModel }
+export const SnippetModel =
+  (mongoose.models.Snippet as mongoose.Model<ISnippet>) ??
+  mongoose.model<ISnippet>('Snippet', SnippetSchema)

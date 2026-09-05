@@ -14,7 +14,7 @@ import { prepareTokensFromPoolExtractions } from './../helpers/tokens.js'
 
 import * as models from '@tokenuity/store'
 
-import { CheckTypes } from '@tokenuity/contracts'
+import { CheckTypes } from '@tokenuity/types'
 import { PoolsFromExtractions } from './../types/poolExtractionTypes.js'
 
 const {

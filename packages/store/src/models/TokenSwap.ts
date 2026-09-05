@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { ITokenSwap } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { ITokenSwap } from '@tokenuity/types'
 
 const TokenSwapSchema = new Schema<ITokenSwap>({
   tx: { type: String },
@@ -19,5 +19,6 @@ const TokenSwapSchema = new Schema<ITokenSwap>({
 TokenSwapSchema.index({ tx: 1 }, { unique: true })
 // TokenSwapSchema.index({ token: 1, timestamp: -1 })
 
-const TokenSwapModel = model<ITokenSwap>('TokenSwap', TokenSwapSchema)
-export { TokenSwapModel }
+export const TokenSwapModel =
+  (mongoose.models.TokenSwap as mongoose.Model<ITokenSwap>) ??
+  mongoose.model<ITokenSwap>('TokenSwap', TokenSwapSchema)

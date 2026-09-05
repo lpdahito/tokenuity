@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { DexProtocols, ISell } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { DexProtocols, ISell } from '@tokenuity/types'
 
 /** 
  * Codes:
@@ -60,5 +60,6 @@ const SellSchema = new Schema<ISell>({
 
 SellSchema.index({ tokenAddress: 1 }, { unique: true })
 
-const SellModel = model<ISell>('Sell', SellSchema)
-export { SellModel }
+export const SellModel =
+  (mongoose.models.Sell as mongoose.Model<ISell>) ??
+  mongoose.model<ISell>('Sell', SellSchema)

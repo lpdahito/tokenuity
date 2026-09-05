@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import { IHolding } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import { IHolding } from '@tokenuity/types'
 
 const HoldingSchema = new Schema<IHolding>({
   amount: { type: String },
@@ -13,5 +13,6 @@ const HoldingSchema = new Schema<IHolding>({
 
 HoldingSchema.index({ address: 1 }, { unique: true })
 
-const HoldingModel = model<IHolding>('Holding', HoldingSchema)
-export { HoldingModel }
+export const HoldingModel =
+  (mongoose.models.Holding as mongoose.Model<IHolding>) ??
+  mongoose.model<IHolding>('Holding', HoldingSchema)

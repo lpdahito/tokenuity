@@ -11,7 +11,7 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/explorer/package.json ./apps/explorer/
 COPY packages/evmole/package.json ./packages/evmole/
 COPY packages/store/package.json ./packages/store/
-COPY packages/contracts/package.json ./packages/contracts/
+COPY packages/types/package.json ./packages/types/
  
 RUN pnpm install --filter explorer... --frozen-lockfile
  

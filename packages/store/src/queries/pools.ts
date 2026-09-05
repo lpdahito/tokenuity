@@ -1,5 +1,5 @@
 // packages/store/src/queries/tokens.ts
-import type { IToken } from '@tokenuity/types'
+import type { IPool } from '@tokenuity/types'
 import { connect } from '../client'
 import { TokenModel } from '../models/Token'
 
@@ -23,7 +23,7 @@ export async function getToken(
 
 export async function getTokens(
   // chainId: number,
-  opts: { limit?: number; cursor?: number; } = {}
+  opts: { limit?: number; cursor?: number; scamOnly?: boolean } = {}
 ): Promise<IToken[]> {
   await connect()
 

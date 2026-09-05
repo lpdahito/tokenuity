@@ -12,7 +12,7 @@ import extractData from './../jobs/extractDataForFindPools.js'
 import * as models from '@tokenuity/store'
 
 
-import { IPrice } from '@tokenuity/contracts'
+import { IPrice } from '@tokenuity/types'
 
 const {
   PoolModel: Pool,

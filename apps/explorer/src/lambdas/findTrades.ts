@@ -15,7 +15,7 @@ import { findOrCreateTradingParams } from './../helpers/tradingParams.js'
 import executeBuy from './executeBuy2.js'
 import executeSell from './executeSell2.js'
 
-import { IHolding, IPrice, IPortfolio, IToken, DexProtocols } from '@tokenuity/contracts'
+import { IHolding, IPrice, IPortfolio, IToken, DexProtocols } from '@tokenuity/types'
 import { LimitsForSwaps, } from './../types.js'
 
 export interface Holdings {

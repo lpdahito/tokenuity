@@ -23,7 +23,7 @@ const {
 import tradingParams from '../config/tradingParams.js'
 
 import type { HydratedDocument } from 'mongoose'
-import type { IHolding, IPortfolio, IToken } from '@tokenuity/contracts'
+import type { IHolding, IPortfolio, IToken } from '@tokenuity/types'
 import type { EventToken, ExecuteSellParams, ExecuteSwapParams, LimitsForSwaps, SwapMovementForToken } from '../types.js'
 
 interface Call3 {

@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { ISelector } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { ISelector } from '@tokenuity/types'
 
 const SelectorSchema = new Schema<ISelector>({
   body: { type: String },
@@ -16,5 +16,6 @@ const SelectorSchema = new Schema<ISelector>({
 
 SelectorSchema.index({ body: 1 }, { unique: true })
 
-const SelectorModel = model<ISelector>('Selector', SelectorSchema)
-export { SelectorModel }
+export const SelectorModel =
+  (mongoose.models.Selector as mongoose.Model<ISelector>) ??
+  mongoose.model<ISelector>('Selector', SelectorSchema)

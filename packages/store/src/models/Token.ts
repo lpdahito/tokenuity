@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { IToken } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { IToken } from '@tokenuity/types'
 
 const TokenSchema = new Schema<IToken>({
   name: { type: String },
@@ -21,5 +21,6 @@ const TokenSchema = new Schema<IToken>({
 
 TokenSchema.index({ address: 1 }, { unique: true })
 
-const TokenModel = model<IToken>('Token', TokenSchema)
-export { TokenModel }
+export const TokenModel =
+  (mongoose.models.Token as mongoose.Model<IToken>) ??
+  mongoose.model<IToken>('Token', TokenSchema)

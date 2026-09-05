@@ -15,7 +15,7 @@ import { Logger } from '../config/logger.js'
 
 import * as models from '@tokenuity/store'
 
-import { CheckTypes } from '@tokenuity/contracts'
+import { CheckTypes } from '@tokenuity/types'
 
 export interface PoolsFromSwaps {
   [key: string]: PoolFromSwap

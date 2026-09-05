@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose'
-import type { ICheck } from '@tokenuity/contracts'
+import mongoose, { Schema } from 'mongoose'
+import type { ICheck } from '@tokenuity/types'
 
 const CheckSchema = new Schema<ICheck>({
   type: { type: Number},
@@ -17,5 +17,6 @@ const CheckSchema = new Schema<ICheck>({
 CheckSchema.index({ createdAt: -1 })
 CheckSchema.index({ type: 1, createdAt: 1 })
 
-const CheckModel = model<ICheck>('Check', CheckSchema)
-export { CheckModel, ICheck }
+export const CheckModel =
+  (mongoose.models.Check as mongoose.Model<ICheck>) ??
+  mongoose.model<ICheck>('Check', CheckSchema)
