@@ -2,7 +2,7 @@ import { BadgeCheck, ChevronDown, Ellipsis, Wallet } from "lucide-react";
 
 import { notFound } from 'next/navigation'
 
-import { Main } from "@/components/tokens/Main";
+import { Feed } from "@/components/home/Feed";
 
 export default async function Home() {
 
@@ -58,7 +58,7 @@ export default async function Home() {
         </div>
 
         {/* Card */}
-        <div className="flex flex-col justify-start items-center gap-3 w-full">
+        <div className="flex flex-col justify-start items-center gap-3 w-full mb-[20px]">
           <div className="flex flex-col justify-start items-center w-full bg-card border-[1px] rounded-[15px] border-border shadow-soft">
             {/* Top */}
             <div className="flex flex-col justify-start items-center w-full px-[15px] border-b-[1px] border-border-soft">
@@ -125,11 +125,10 @@ export default async function Home() {
               <ChevronDown size={14} strokeWidth={2.5} />
             </a>
           </div>
-
-          <div className="text-[12px] text-fg-muted text-right w-full pr-[10px]">
-            Profit is realized.
-          </div>
         </div>
+
+        {/* Feed */}
+        <Feed />
       </div>
     </div>
   )
