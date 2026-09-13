@@ -1,8 +1,36 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 import { CircleDashed, CircleDot, CornerDownRight, } from "lucide-react";
 
-
+import { AnimatedEllipsis } from "@/components/shared/AnimatedEllipsis";
 
 export function Feed () {
+  useEffect(() => {
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout>
+
+    async function poll() {
+      try {
+        const res = await fetch('/api/v1/dashboard', { signal: controller.signal })
+        console.log('sep')
+        if (res.ok) console.log(await res.json())
+      } catch (err) {
+        console.log(err)
+      }
+
+      timer = setTimeout(poll, 10_000)
+    }
+
+    timer = setTimeout(poll, 10_000)
+
+    return () => {
+      controller.abort()
+      clearTimeout(timer)
+    }
+  }, [])
+
   return (
     <div className="flex flex-col justify-start items-start text-fg w-[500px] px-[10px]">
       {/* Title */}
@@ -35,13 +63,13 @@ export function Feed () {
             {/* item 1 */}
             <li className="flex flex-row justify-start items-center gap-2 w-full h-[30px]">
               <CornerDownRight className="text-fg-muted" size={13} strokeWidth={3} />
-              Added +3 new tokens
+              Added <span className="font-medium">+3</span>new pools
             </li>
 
             {/* item 2 */}
             <li className="flex flex-row justify-start items-center gap-2 w-full h-[30px]">
               <CornerDownRight className="text-fg-muted" size={13} strokeWidth={3} />
-              Added +3 new tokens
+              Added <span className="font-medium">+3</span>new tokens
             </li>
           </ul>
         </li>
@@ -51,7 +79,7 @@ export function Feed () {
           <div className="flex flex-row justify-start items-center w-full h-[30px]">
             {/* left */}
             <div className="flex flex-row justify-start items-center gap-1 w-[75%]">
-              <span className="font-medium">Base</span>
+              <span className="font-medium">Robinhood</span>
               <span>-</span>
               Scanned newly created pairs
             </div>
@@ -79,7 +107,7 @@ export function Feed () {
             <div className="flex flex-row justify-start items-center gap-1 w-[75%]">
               <span className="font-medium">Bsc</span>
               <span>-</span>
-              Scanned 22,098 swaps
+              Scanned <span className="font-medium">22,098</span> swaps
             </div>
 
             {/* right */}
@@ -110,22 +138,22 @@ export function Feed () {
             {/* item 1 */}
             <li className="flex flex-row justify-start items-center gap-2 w-full h-[30px]">
               <CornerDownRight className="text-fg-muted" size={13} strokeWidth={3} />
-              Added +3 new tokens
+              Added <span className="font-medium">+3</span> new pools
             </li>
 
             {/* item 2 */}
             <li className="flex flex-row justify-start items-center gap-2 w-full h-[30px]">
               <CornerDownRight className="text-fg-muted" size={13} strokeWidth={3} />
-              Added +3 new tokens
+              Added <span className="font-medium">+3</span> new tokens
             </li>
           </ul>
         </li>
       </ul>
 
       {/* Scanning */}
-      <div className="flex flex-row justify-center items-center gap-1 text-[12px] text-fg-muted w-full">
-        <CircleDashed size={11} strokeWidth={3} />
-        Scanning...
+      <div className="flex flex-row justify-center items-center text-[12px] text-fg-muted w-full">
+        <CircleDashed size={11} strokeWidth={3} className="animate-[spin_2s_linear_infinite] mr-[4px]" />
+        Scanning <AnimatedEllipsis />
       </div>
     </div>
   )
