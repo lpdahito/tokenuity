@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/components/**)",
+      "Edit(/app/globals.css)",
+      "Edit(/**/*.css)",
+      "Edit(/next.config.ts)",
+      "Edit(/tsconfig.json)",
+      "Edit(/package.json)",
+      "Edit(/CLAUDE.md)",
+      "Read(/.env)",
+      "Read(/.env.*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(npm:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
