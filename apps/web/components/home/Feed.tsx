@@ -35,7 +35,7 @@ export function Feed () {
     <div className="flex flex-col justify-start items-start text-fg w-[500px] px-[10px]">
       {/* Title */}
       <div className="flex flex-row justify-start items-center gap-1 pb-[8px]">
-        <CircleDot color ={'green'} size={11} strokeWidth={4} />
+        <CircleDot className="text-lime-600" size={11} strokeWidth={4} />
         <h4 className="font-medium">Live feed</h4>
         <span className="text-[12px] text-fg-muted">(updated 10s ago)</span>
       </div>

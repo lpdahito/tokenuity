@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronDown, Ellipsis, Wallet } from "lucide-react";
+import { BadgeCheck, ChevronDown, Ellipsis, ListSortAscending, Wallet } from "lucide-react";
 
 import { notFound } from 'next/navigation'
 
@@ -41,7 +41,7 @@ export default async function Home() {
 
       <div className="flex flex-col justify-start items-center gap-2 w-full max-w-[500px]">
         {/* Menu */}
-        <div className="flex flex-row justify-center items-center h-[46px] border-y-[1px] border-b-border/25 border-t-transparent">
+        <div className="flex flex-row justify-center items-center h-[46px] mb-[20px] border-y-[1px] border-b-border/25 border-t-transparent">
           <a href="#" className="flex flex-col justify-center items-center text-fg w-[100px] h-full border-y-[2px] border-b-fg border-t-transparent">
             For humans
           </a>
@@ -52,79 +52,128 @@ export default async function Home() {
         </div>
 
         {/* Sort */}
-        <div className="flex flex-row justify-end items-center w-full gap-1 px-2">
+        {/* <div className="flex flex-row justify-end items-center w-full gap-1 px-2">
           All chains
           <ChevronDown size={14} strokeWidth={2.5} />
-        </div>
+        </div> */}
 
         {/* Card */}
-        <div className="flex flex-col justify-start items-center gap-3 w-full mb-[20px]">
+        <div className="flex flex-col justify-start items-center gap-2 w-full">
           <div className="flex flex-col justify-start items-center w-full bg-card border-[1px] rounded-[15px] border-border shadow-soft">
             {/* Top */}
             <div className="flex flex-col justify-start items-center w-full px-[15px] border-b-[1px] border-border-soft">
               {/* Head */}
-              <div className="flex flex-row justify-start items-start w-full pt-[15px] pb-[10px] border-b-[1px] border-dashed border-border-soft">
+              <div className="flex flex-row justify-start items-center w-full pt-[15px] pb-[10px] ">
                 {/* Left */}
-                <div className="flex flex-col justify-start items-start gap-0.5 w-[70%]">
-                  <div className="font-medium">Entered 2 hours ago</div>
-                  <div className="text-[12px] text-fg-muted">For 10 mins</div>
+                <div className="flex flex-col justify-center items-start gap-0.5 w-[30%] h-full">
+                  <div className="font-medium">Top tokens</div>
+                  {/* <div className="text-[12px] text-fg-muted">422 added (last 30m)</div> */}
                 </div>
+
                 {/* Right */}
-                <div className="flex flex-row justify-end items-center gap-1 w-[30%]">
-                  <a href="#" className="flex flex-row justify-center items-center text-[12px] w-[80px] h-[30px] rounded-[8px] bg-button-secondary">
-                    Button
+                <div className="flex flex-row justify-end items-center gap-1 w-[70%]">
+                  <a href="#" className="flex flex-row justify-start items-center text-[12px] w-[100px] h-[30px] px-[12px] rounded-[8px] bg-button-secondary">
+                    <div className="flex flex-row justify-start items-center gap-[5] w-[75%]">
+                      All chains
+                    </div>
+
+                    <div className="flex flex-row justify-end w-[25%]">
+                      <ChevronDown size={13} strokeWidth={2.5} />
+                    </div>
                   </a>
 
-                  <a href="#">
-                    <Ellipsis size={14} strokeWidth={2.5} />
+                  <a href="#" className="flex flex-row justify-start items-center text-[12px] w-[120px] h-[30px] px-[12px] rounded-[8px] bg-button-secondary">
+                    <div className="flex flex-row justify-start items-center gap-[5] w-[75%]">
+                      <ListSortAscending size={12} strokeWidth={3} />
+                      Ranked
+                    </div>
+
+                    <div className="flex flex-row justify-end w-[25%]">
+                      <ChevronDown size={13} strokeWidth={2.5} />
+                    </div>
                   </a>
                 </div>
               </div>
 
-              {/* Menu */}
-              <div className="flex flex-row justify-center items-center h-[46px]">
-                <a href="#" className="flex flex-col justify-center items-center text-fg w-[100px] h-full border-y-[2px] border-b-fg border-t-transparent">
-                  The data
-                </a>
-
-                <a href="#" className="flex flex-col justify-center items-center text-fg w-[100px] h-full border-y-[2px] border-transparent">
-                  Logs (4)
-                </a>
-              </div>
             </div>
 
-            {/* Center */}
+            {/* Middle */}
             <ul className="flex flex-col justify-start items-center w-full px-[15px]">
-              <li className="flex flex-row justify-start items-center w-full min-h-[46px] border-b-[1px] border-dashed border-border-soft">
+              <li className="flex flex-row justify-start items-center w-full min-h-[42px] border-b-[1px] border-dashed border-border-soft">
                 {/* Left */}
-                <div className="flex flex-row justify-start items-center w-[50%]">
-                  Exit amount
+                <div className="w-[5%]">1.</div>
+
+                {/* Center */}
+                <div className="flex flex-row justify-start items-center gap-1 text-[12px] w-[80%]">
+                  <span className="text-[13px] font-semibold">Hyperliquid (HYPE)</span>
+                  <span className="text-fg-muted">$0.0021</span>
+                  <span className="text-lime-600">(+23.21%)</span>
                 </div>
 
                 {/* Right */}
-                <div className="flex flex-row justify-end items-center w-[50%]">
-                  USD $21.54 <span className="font-semibold">(x4.14)</span>
+                <div className="flex flex-row justify-end items-center gap-2 text-[12px] w-[15%]">
+                  <span className="text-fg-muted">5s old</span>
+                  <a href="#" className="">
+                    <Ellipsis size={16} strokeWidth={2.5} />
+                  </a>
                 </div>
               </li>
 
-              <li className="flex flex-row justify-start items-center w-full min-h-[46px]">
+              <li className="flex flex-row justify-start items-center w-full min-h-[42px] border-b-[1px] border-dashed border-border-soft">
                 {/* Left */}
-                <div className="flex flex-row justify-start items-center w-[50%]">
-                  Initial investment
+                <div className="w-[5%]">2.</div>
+
+                {/* Center */}
+                <div className="flex flex-row justify-start items-center gap-1 text-[12px] w-[80%]">
+                  <span className="text-[13px] font-semibold">Uniswap (UNI)</span>
+                  <span className="text-fg-muted">$6.42</span>
+                  <span className="text-lime-600">(+0.77%)</span>
                 </div>
 
                 {/* Right */}
-                <div className="flex flex-row justify-end items-center w-[50%]">
-                  USD $5.00
+                <div className="flex flex-row justify-end items-center gap-2 text-[12px] w-[15%]">
+                  <span className="text-fg-muted">2h old</span>
+                  <a href="#" className="">
+                    <Ellipsis size={16} strokeWidth={2.5} />
+                  </a>
+                </div>
+              </li>
+
+              <li className="flex flex-row justify-start items-center w-full min-h-[42px]">
+                {/* Left */}
+                <div className="w-[5%]">3.</div>
+
+                {/* Center */}
+                <div className="flex flex-row justify-start items-center gap-1 text-[12px] w-[80%]">
+                  <span className="text-[13px] font-semibold">DevBot (DEVB)</span>
+                  <span className="text-fg-muted">$0.0021</span>
+                  <span className="text-rose-700">(-3.21%)</span>
+                </div>
+
+                {/* Right */}
+                <div className="flex flex-row justify-end items-center gap-2 text-[12px] w-[15%]">
+                  <span className="text-fg-muted">24m old</span>
+                  <a href="#" className="">
+                    <Ellipsis size={16} strokeWidth={2.5} />
+                  </a>
                 </div>
               </li>
             </ul>
 
             {/* Bottom */}
-            <a href="#" className="flex flex-col justify-center items-center text-fg w-full h-[36px] rounded-b-[15px] bg-bg">
+            <a href="#" className="flex flex-col justify-center items-center text-fg w-full h-[32px] rounded-b-[15px] bg-bg">
               <ChevronDown size={14} strokeWidth={2.5} />
             </a>
           </div>
+
+          <div className="text-[11px] text-fg-muted text-right w-full px-[8px]">3 of 122,004 tokens</div>
+        </div>
+
+        {/* Ellipsis */}
+        <div className="flex flex-row justify-center items-center gap-[2px] w-full mb-[20px]">
+          <div className="w-[5px] h-[5px] bg-fg rounded-full"></div>
+          <div className="w-[5px] h-[5px] bg-border rounded-full"></div>
+          <div className="w-[5px] h-[5px] bg-border rounded-full"></div>
         </div>
 
         {/* Feed */}
