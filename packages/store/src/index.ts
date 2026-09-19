@@ -20,6 +20,7 @@ export { TokenModel } from './models/Token'
 export { TokenSwapModel } from './models/TokenSwap'
 export { TradingParamsModel } from './models/TradingParams'
 export { TradingReportModel } from './models/TradingReport'
+export { TransferModel } from './models/Transfer'
 
 // queries
 export * from './queries/tokens'

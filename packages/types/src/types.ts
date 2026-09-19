@@ -19,7 +19,8 @@ export enum CheckTypes {
   scanBuy,
   scanSell,
   poolExtraction,
-  swapExtraction
+  swapExtraction,
+  transferExtraction
 }
 
 export enum Launchpads {
@@ -320,4 +321,12 @@ export interface ITradingReport {
   bestProfit: string
   bestMultiple: number
   results: Array<{ count: number, multiple: number, profit: string }>
+}
+
+export interface ITransfer {
+  to: string
+  from: string
+  block: number
+  token: string
+  createdAt: number
 }

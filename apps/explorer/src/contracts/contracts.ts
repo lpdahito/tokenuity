@@ -24,7 +24,8 @@ export interface IContract {
       base: Array<string>,
       permitted: Array<string>,
       unwanted: Array<string>
-    }
+    },
+    transferSignature: string
   },
   chainlink: { aggregatorV3: {address: string, abi: Array<object>} },
   uniswapv2: IUniswapv2,

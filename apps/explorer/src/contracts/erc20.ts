@@ -78,5 +78,6 @@ export default {
     base: base,
     permitted: permitted,
     unwanted: unwanted
-  }
+  },
+  transferSignature: "Transfer(address,address,uint256)"
 }

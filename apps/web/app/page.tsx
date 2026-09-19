@@ -1,4 +1,4 @@
-import { BadgeCheck, ChevronDown, Ellipsis, ListSortAscending, Wallet } from "lucide-react";
+import { BadgeCheck, ChevronDown, Ellipsis, ListSortAscending, Trophy, Wallet } from "lucide-react";
 
 import { notFound } from 'next/navigation'
 
@@ -65,7 +65,8 @@ export default async function Home() {
               {/* Head */}
               <div className="flex flex-row justify-start items-center w-full pt-[15px] pb-[10px] ">
                 {/* Left */}
-                <div className="flex flex-col justify-center items-start gap-0.5 w-[30%] h-full">
+                <div className="flex flex-row justify-left items-center gap-1.5 w-[30%] h-full">
+                  <Trophy size={13} strokeWidth={2.5} />
                   <div className="font-medium">Top tokens</div>
                   {/* <div className="text-[12px] text-fg-muted">422 added (last 30m)</div> */}
                 </div>
