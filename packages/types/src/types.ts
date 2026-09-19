@@ -331,5 +331,5 @@ export interface ITransfer {
   block: number
   token: string
   logIndex: number
-  createdAt: number
+  createdAt: Date
 }

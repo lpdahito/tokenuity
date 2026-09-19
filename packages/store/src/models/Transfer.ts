@@ -8,10 +8,11 @@ const TransferSchema = new Schema<ITransfer>({
   token: { type: String },
   block: { type: Number },
   logIndex: { type: Number },
-  createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) }
+  createdAt: { type: Date, default: Date.now, immutable: true }
 })
 
-TransferSchema.index({ address: 1 }, { unique: true })
+TransferSchema.index({ tx: 1, logIndex: 1 }, { unique: true })
+TransferSchema.index({ createdAt: 1 }, { expireAfterSeconds: 1800 })
 
 export const TransferModel =
   (mongoose.models.Transfer as mongoose.Model<ITransfer>) ??
