@@ -26,6 +26,19 @@ services:
       - INSTANCE_FUNCTION_TYPE=findSwaps
     env_file: apps/explorer/.env
 
+  findTransfers:
+    image: tokenuity-explorer
+    container_name: tokenuity-findTransfers
+    restart: always
+    networks:
+      - mongo-network
+    depends_on:
+      findPools:
+        condition: service_started
+    environment:
+      - INSTANCE_FUNCTION_TYPE=findTransfers
+    env_file: apps/explorer/.env
+
   # findTrades:
   #   image: explorer
   #   container_name: tokenuity-findTrades

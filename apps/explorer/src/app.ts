@@ -19,6 +19,7 @@ import { findOrCreateToken } from './helpers/tokens.js'
 
 import findPools from './lambdas/findPools.js'
 import findSwaps from './lambdas/findSwaps.js'
+import findTransfers from './lambdas/findTransfers.js'
 
 import findTrades from './lambdas/findTrades.js'
 
@@ -61,6 +62,10 @@ const main = async () => {
 
       case 'findSwaps':
         _findSwaps(); break;
+
+      case 'findTransfers':
+        _findTransfers(); break;
+
 
       case 'findTrades':
         await _findTrades(); break;
@@ -152,6 +157,34 @@ const _findSwaps = async () => {
     })
 
     console.log('Reached end of _findSwaps.')
+  } catch(err: any) {
+    // Logger.err({ error: err, report: true })
+    console.log(err)
+  }
+}
+
+const _findTransfers = async () => {
+  console.log('Inside _findSwaps.')
+
+  try {
+    const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
+    if (!baseToken) return console.log('Could not find or create baseToken...')
+
+    let isRunning = false
+
+    cron.schedule('*/10 * * * * *', async () => {
+      if (isRunning) { return }
+
+      isRunning = true
+
+      try {
+        await findTransfers()
+      } finally {
+        isRunning = false
+      }
+    })
+
+    console.log('Reached end of _findTransfers.')
   } catch(err: any) {
     // Logger.err({ error: err, report: true })
     console.log(err)

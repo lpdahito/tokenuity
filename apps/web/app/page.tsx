@@ -166,7 +166,7 @@ export default async function Home() {
             </a>
           </div>
 
-          <div className="text-[11px] text-fg-muted text-right w-full px-[8px]">3 of 122,004 tokens</div>
+          <div className="text-[12px] text-fg-muted text-center w-full px-[8px]">3 of 122,004 tokens</div>
         </div>
 
         {/* Ellipsis */}
