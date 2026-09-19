@@ -2,10 +2,12 @@ import mongoose, { Schema } from 'mongoose'
 import { ITransfer } from '@tokenuity/types'
 
 const TransferSchema = new Schema<ITransfer>({
+  tx: { type: String },
   to: { type: String },
   from: { type: String },
   token: { type: String },
   block: { type: Number },
+  logIndex: { type: Number },
   createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) }
 })
 

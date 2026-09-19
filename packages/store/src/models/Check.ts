@@ -7,8 +7,9 @@ const CheckSchema = new Schema<ICheck>({
   swapCount: { type: Number },
   poolCount: { type: Number },
   tokenCount: { type: Number },
-  timePerSwap: { type: String },
+  timePerLog: { type: String },
   loopExecTime: { type: String },
+  transferCount: { type: Number },
   portfolioBalance: { type: String },
   rejectedPoolCount: { type: Number },
   createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) }

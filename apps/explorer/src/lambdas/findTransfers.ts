@@ -7,7 +7,7 @@ import { providers } from '../config/provider.js'
 
 import { contracts } from '../contracts/contracts.js'
 
-import updatePoolsFromSwaps from './../jobs/updatePoolsFromSwaps.js'
+import updateTransfersFromTransfers from './../jobs/updateTransfersFromTransfers.js'
 
 import * as models from '@tokenuity/store'
 
@@ -52,7 +52,7 @@ export default async (
     const logs = await providers[0].getLogs(filter)
     if (!logs.length) return
 
-    await updateTransfers(logs, endBlock)
+    await updateTransfersFromTransfers(logs, endBlock)
   } catch (err: any) {
     Logger.err({ error: err, report: true })
   }

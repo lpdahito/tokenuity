@@ -9,7 +9,7 @@ import { chain } from './../config/chain.js'
 import { providers } from '../config/provider.js'
 import { Logger } from '../config/logger.js'
 
-import { extractPoolDataFromLog, savePoolDataFromExtractions } from './../helpers/extractions.js'
+import { extractPoolDataFromLog, savePoolDataFromExtractions } from './../helpers/poolExtractions.js'
 import { prepareTokensFromPoolExtractions } from './../helpers/tokens.js'
 
 import * as models from '@tokenuity/store'

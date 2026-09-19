@@ -117,8 +117,9 @@ export interface ICheck {
   poolCount?: number
   swapCount?: number
   tokenCount?: number
-  timePerSwap?: string
+  timePerLog?: string
   loopExecTime?: string
+  transferCount?: number
   portfolioBalance?: string
   rejectedPoolCount?: number
 }
@@ -324,9 +325,11 @@ export interface ITradingReport {
 }
 
 export interface ITransfer {
+  tx: string
   to: string
   from: string
   block: number
   token: string
+  logIndex: number
   createdAt: number
 }

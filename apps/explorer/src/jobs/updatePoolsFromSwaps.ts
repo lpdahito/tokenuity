@@ -114,7 +114,7 @@ export default async (
 
   let execTime = '0'
   let loopExecTime = '0'
-  let timePerSwap = '0'
+  let timePerLog = '0'
   
   let pools: PoolsFromSwaps = {}
 
@@ -346,14 +346,14 @@ export default async (
     const _execTime = (extractionEnd - extractionStart) / 1000
 
     if (swapCount) {
-      timePerSwap = (_execTime / swapCount).toFixed(4)
+      timePerLog = (_execTime / swapCount).toFixed(4)
     }
 
     execTime = _execTime.toFixed(2)
 
     const check = await Check.create({
       type: CheckTypes.swapExtraction,
-      execTime, loopExecTime, timePerSwap, swapCount, poolCount
+      execTime, loopExecTime, timePerLog, swapCount, poolCount
     })
 
     // if (isLocal) { console.log(check) }
