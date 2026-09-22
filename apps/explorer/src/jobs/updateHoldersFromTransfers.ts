@@ -21,7 +21,7 @@ interface HolderFromTransfer {
   block: number
   token: string
   address: string
-  balance: string
+  balance: bigint
 }
 
 interface HolderInsertDataFromTransfer {
@@ -52,6 +52,7 @@ export default async (
   const holderInsertDataArray: HolderInsertDataFromTransfer[] = []
 
   let holderCount = 0
+  let transferCount = 0
 
   let execTime = '0'
   let loopExecTime = '0'
@@ -93,45 +94,65 @@ export default async (
       
       if (!parsedLog) continue
 
-      // From
-      if (parsedLog.args[0] !== ethers.ZeroAddress) {
-        holderInsertDataArray.push(<HolderInsertDataFromTransfer>{
-          updateOne: {
-            filter: {
-              token: log.address,
-              address: parsedLog.args[0]
-            },
-            update: {
-              block: currentBlock,
-            },
-            upsert: true
-          }
-        })
+      const token = log.address
 
-        holderCount++
+      const from = parsedLog.args[0]
+      const to = parsedLog.args[1]
+
+      const amount = parsedLog.args[2]
+
+      const senderKey = token + ':' + from
+      const receiverKey = token + ':' + to
+
+      // console.log(senderKey)
+      // console.log(receiverKey)
+
+      // Sender
+      if (from !== ethers.ZeroAddress) {
+        if (!(senderKey in holders)) {
+          holders[senderKey] = {
+            token, address: from, block: currentBlock, balance: BigInt(-amount)
+          }
+
+          holderCount++
+        } else {
+          holders[senderKey].balance -= amount
+          holders[senderKey].block = Math.max(holders[senderKey].block, currentBlock)
+        }
       }
 
-      // To
+      // Receiver
+      if (!(receiverKey in holders)) {
+        holders[receiverKey] = {
+          token, address: to, block: currentBlock, balance: BigInt(amount)
+        }
+
+        holderCount++
+      } else {
+        holders[receiverKey].balance += amount
+        holders[receiverKey].block = Math.max(holders[receiverKey].block, currentBlock)
+      }
+
+      transferCount++
+    }
+
+    for (const key in holders) {
       holderInsertDataArray.push(<HolderInsertDataFromTransfer>{
         updateOne: {
           filter: {
-            token: log.address,
-            address: parsedLog.args[1]
+            token: holders[key].token,
+            address: holders[key].address
           },
           update: {
-            block: currentBlock,
+            block: holders[key].block,
           },
           upsert: true
         }
       })
-
-      holderCount++
     }
 
     const loopExtractionEnd = performance.now()
     loopExecTime = ((loopExtractionEnd - extractionStart) / 1000).toFixed(2)
-
-    console.log('loop done')
 
     await saveDataFromTransfers(
       holderInsertDataArray
@@ -152,7 +173,7 @@ export default async (
 
     const check = await Check.create({
       type: CheckTypes.transferExtraction,
-      execTime, loopExecTime, timePerLog, transferCount: holderCount
+      execTime, loopExecTime, timePerLog, transferCount, holderCount
     })
 
     // if (isLocal) { console.log(check) }

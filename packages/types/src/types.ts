@@ -118,6 +118,7 @@ export interface ICheck {
   swapCount?: number
   tokenCount?: number
   timePerLog?: string
+  holderCount?: number
   loopExecTime?: string
   transferCount?: number
   portfolioBalance?: string

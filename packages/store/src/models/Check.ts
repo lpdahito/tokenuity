@@ -8,6 +8,7 @@ const CheckSchema = new Schema<ICheck>({
   poolCount: { type: Number },
   tokenCount: { type: Number },
   timePerLog: { type: String },
+  holderCount: { type: Number },
   loopExecTime: { type: String },
   transferCount: { type: Number },
   portfolioBalance: { type: String },
