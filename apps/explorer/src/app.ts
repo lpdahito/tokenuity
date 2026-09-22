@@ -33,6 +33,7 @@ const {
   TokenModel: Token,
   PriceModel: Price,
   CheckModel: Check,
+  HolderModel: Holder,
   HoldingModel: Holding,
   SnippetModel: Snippet,
   SelectorModel: Selector,
@@ -93,6 +94,7 @@ const _findPools = async () => {
     await Token.collection.dropIndexes()
     await Price.collection.dropIndexes()
     await Check.collection.dropIndexes()
+    await Holder.collection.dropIndexes()
     await Holding.collection.dropIndexes()
     await Snippet.collection.dropIndexes()
     await Selector.collection.dropIndexes()
@@ -103,6 +105,7 @@ const _findPools = async () => {
     await Check.collection.createIndex({ type: 1, createdAt: 1  })
     await Pool.collection.createIndex({ address: 1 }, { unique: true })
     await Token.collection.createIndex({ address: 1 }, { unique: true })
+    await Holder.collection.createIndex({ token: 1, address: 1 }, { unique: true })
     await Holding.collection.createIndex({ address: 1 }, { unique: true })
     await Buy.collection.createIndex({ tokenAddress: 1 }, { unique: true })
     await Sell.collection.createIndex({ tokenAddress: 1 }, { unique: true })

@@ -5,9 +5,18 @@ const cache = globalThis as unknown as {
 }
 
 export async function connect(): Promise<typeof mongoose> {
+  let name = 'tokenuity-base'
+
+  switch (process.env.CHAIN_ID) {
+    case '56':
+      name = 'tokenuity-bsc'; break;
+
+    case '8453':
+      name = 'tokenuity-base'; break;
+  }
   
   // const uri = process.env.MONGODB_URI
-  const uri = 'mongodb://mongo-server:27017/trendsbase?replicaSet=rs0'
+  const uri = 'mongodb://mongo-server:27017/' + name + '?replicaSet=rs0'
 
   if (!uri) throw new Error('MONGODB_URI is not set')
 

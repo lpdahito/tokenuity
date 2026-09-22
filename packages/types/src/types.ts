@@ -132,6 +132,14 @@ export interface ICreator {
   // tokens: Array<string>
 }
 
+export interface IHolder {
+  block: number,
+  token: string,
+  address: string,
+  balance: string,
+  createdAt: Date,
+}
+
 export interface IHolding {
   address: string,
   // quotedAmount: string,

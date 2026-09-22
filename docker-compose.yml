@@ -32,9 +32,6 @@ services:
     restart: always
     networks:
       - mongo-network
-    depends_on:
-      findPools:
-        condition: service_started
     environment:
       - INSTANCE_FUNCTION_TYPE=findTransfers
     env_file: apps/explorer/.env

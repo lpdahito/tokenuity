@@ -1,6 +1,8 @@
 import erc20 from './abis/openzeppelin/ERC20.json' // assert { type: 'json' }
 import ownable from './abis/openzeppelin/Ownable.json' // assert { type: 'json' }
 
+import { id } from 'ethers'
+
 // Reference:
 // https://docs.openzeppelin.com/contracts/4.x/api/token/erc20
 // https://docs.openzeppelin.com/contracts/5.x/api/token/erc20
@@ -79,5 +81,5 @@ export default {
     permitted: permitted,
     unwanted: unwanted
   },
-  transferSignature: "Transfer(address,address,uint256)"
+  transferSignature: id("Transfer(address,address,uint256)")
 }

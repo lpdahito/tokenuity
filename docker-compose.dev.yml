@@ -1,0 +1,33 @@
+# Dev overlay — mounts source into the containers so edits take effect without
+# rebuilding the image.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+#
+# Build once. After that, save a file and tsx restarts the process in about a
+# second. Rebuild only when a dependency or the lockfile changes.
+#
+# One service at a time (three watchers is three tsx processes):
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up findPools
+
+x-explorer-dev: &explorer-dev
+  build:
+    context: .
+    dockerfile: apps/explorer/Dockerfile
+    target: dev
+  image: tokenuity-explorer-dev
+  volumes:
+    # Only source — never /app itself, which would clobber the container's
+    # node_modules with macOS binaries and break pnpm's symlink tree
+    - ./apps/explorer/src:/app/apps/explorer/src
+    - ./packages/store/src:/app/packages/store/src
+    - ./packages/types/src:/app/packages/types/src
+
+services:
+  findPools:
+    <<: *explorer-dev
+
+  findSwaps:
+    <<: *explorer-dev
+
+  findTransfers:
+    <<: *explorer-dev

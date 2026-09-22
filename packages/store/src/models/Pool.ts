@@ -18,7 +18,7 @@ const PoolSchema = new Schema<IPool>({
   decimals0: { type: Number, default: 18 },
   decimals1: { type: Number, default: 18 },
   firstBlock: { type: Number, default: 0 },
-  tickSpacing: { type: Number, deffault: 0 },
+  tickSpacing: { type: Number, default: 0 },
   swap0OutCount: { type: Number, default: 0 },
   swap1OutCount: { type: Number, default: 0 },
   lockedPercentage: { type: Number, default: 0 },

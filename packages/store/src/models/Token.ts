@@ -3,6 +3,7 @@ import type { IToken } from '@tokenuity/types'
 
 const TokenSchema = new Schema<IToken>({
   name: { type: String },
+  block: { type: Number },
   symbol: { type: String },
   address: { type: String },
   decimals: { type: Number, default: 18 },
