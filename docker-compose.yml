@@ -36,6 +36,16 @@ services:
       - INSTANCE_FUNCTION_TYPE=findTransfers
     env_file: apps/explorer/.env
 
+  cleanUp:
+    image: tokenuity-explorer
+    container_name: tokenuity-cleanUp
+    restart: always
+    networks:
+      - mongo-network
+    environment:
+      - INSTANCE_FUNCTION_TYPE=cleanUp
+    env_file: apps/explorer/.env
+
   # findTrades:
   #   image: explorer
   #   container_name: tokenuity-findTrades

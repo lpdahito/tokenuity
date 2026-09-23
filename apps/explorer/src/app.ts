@@ -17,6 +17,8 @@ import { databaseUrl } from './config/databaseUrl.js'
 
 import { findOrCreateToken } from './helpers/tokens.js'
 
+import cleanUp from './lambdas/cleanUp.js'
+
 import findPools from './lambdas/findPools.js'
 import findSwaps from './lambdas/findSwaps.js'
 import findTransfers from './lambdas/findTransfers.js'
@@ -67,9 +69,11 @@ const main = async () => {
       case 'findTransfers':
         _findTransfers(); break;
 
-
       case 'findTrades':
         await _findTrades(); break;
+
+      case 'cleanUp':
+        _cleanUp(); break;
     }
 
     console.log('Successfuly reached end of main function.')
@@ -167,7 +171,7 @@ const _findSwaps = async () => {
 }
 
 const _findTransfers = async () => {
-  console.log('Inside _findSwaps.')
+  console.log('Inside _findTransfers.')
 
   try {
     const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
@@ -201,6 +205,31 @@ const _findTrades = async () => {
     await findTrades()
 
     console.log('Reached end of _findTrades.')
+  } catch(err: any) {
+    // Logger.err({ error: err, report: true })
+    console.log(err)
+  }
+}
+
+const _cleanUp = async () => {
+  console.log('Inside _cleanUp.')
+
+  try {
+    let isRunning = false
+
+    cron.schedule('0 */5 * * * *', async () => {
+      if (isRunning) { return }
+
+      isRunning = true
+
+      try {
+        await cleanUp()
+      } finally {
+        isRunning = false
+      }
+    })
+
+    console.log('Reached end of _cleanUp.')
   } catch(err: any) {
     // Logger.err({ error: err, report: true })
     console.log(err)
