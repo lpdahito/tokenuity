@@ -23,6 +23,8 @@ import findPools from './lambdas/findPools.js'
 import findSwaps from './lambdas/findSwaps.js'
 import findTransfers from './lambdas/findTransfers.js'
 
+import computeTokenData from './lambdas/computeTokenData.js'
+
 import findTrades from './lambdas/findTrades.js'
 
 // import scanBuyOpps from './lambdas/serverless/scanBuyOpps.js'
@@ -68,6 +70,9 @@ const main = async () => {
 
       case 'findTransfers':
         _findTransfers(); break;
+
+      case 'computeTokenData':
+        _computeTokenData(); break;
 
       case 'findTrades':
         await _findTrades(); break;
@@ -192,6 +197,31 @@ const _findTransfers = async () => {
     })
 
     console.log('Reached end of _findTransfers.')
+  } catch(err: any) {
+    // Logger.err({ error: err, report: true })
+    console.log(err)
+  }
+}
+
+const _computeTokenData = async () => {
+  console.log('Inside _computeTokenData.')
+
+  try {
+    let isRunning = false
+
+    cron.schedule('*/30 * * * * *', async () => {
+      if (isRunning) { return }
+
+      isRunning = true
+
+      try {
+        await computeTokenData()
+      } finally {
+        isRunning = false
+      }
+    })
+
+    console.log('Reached end of _computeTokenData.')
   } catch(err: any) {
     // Logger.err({ error: err, report: true })
     console.log(err)

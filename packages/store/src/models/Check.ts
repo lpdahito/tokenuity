@@ -13,11 +13,11 @@ const CheckSchema = new Schema<ICheck>({
   transferCount: { type: Number },
   portfolioBalance: { type: String },
   rejectedPoolCount: { type: Number },
-  createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) }
+  createdAt: { type: Date, default: Date.now, immutable: true }
 })
 
-CheckSchema.index({ createdAt: -1 })
 CheckSchema.index({ type: 1, createdAt: 1 })
+CheckSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 })
 
 export const CheckModel =
   (mongoose.models.Check as mongoose.Model<ICheck>) ??

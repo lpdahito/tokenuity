@@ -20,7 +20,9 @@ export enum CheckTypes {
   scanSell,
   poolExtraction,
   swapExtraction,
-  transferExtraction
+  transferExtraction,
+  tokenCompute,
+  cleanup
 }
 
 export enum Launchpads {
@@ -111,9 +113,9 @@ export interface IBuy {
 }
 
 export interface ICheck {
+  createdAt: Date
   type: CheckTypes
   execTime: string
-  createdAt: number
   poolCount?: number
   swapCount?: number
   tokenCount?: number
@@ -291,6 +293,7 @@ export interface IToken {
   name: string
   block: number
   symbol: string
+  createdAt: Date
   address: string
   follow: boolean
   decimals: number
@@ -299,8 +302,8 @@ export interface IToken {
   lastSwap: number
   swapCount: number
   sellCount: number
-  createdAt: number
   totalSupply: string
+  lastActivityAt: Date
   website: string | null
   isScam: boolean | null
   creator: string | null

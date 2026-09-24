@@ -17,7 +17,8 @@ const TokenSchema = new Schema<IToken>({
   compliant: { type: Boolean, default: null },
   snippetSafe: { type: Boolean, default: null },
   ownerRenounced: { type: Boolean, default: null },
-  createdAt: { type: Number, default: () => Math.floor(Date.now() / 1000) }
+  lastActivityAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now, immutable: true }
 })
 
 TokenSchema.index({ address: 1 }, { unique: true })
