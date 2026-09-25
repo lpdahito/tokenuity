@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(/tsconfig.json)",
+      "Edit(/package.json)",
+      "Edit(/CLAUDE.md)",
+
+      "Edit(/apps/web/components/**)",
+      "Edit(/apps/web/app/globals.css)",
+      "Edit(/apps/web/**/*.css)",
+      "Edit(/apps/web/next.config.ts)",
+      "Edit(/apps/web/tsconfig.json)",
+      "Edit(/apps/web/package.json)",
+      "Edit(/apps/web/CLAUDE.md)",
+
+      "Read(/.env)",
+      "Read(/.env.*)",
+
+      "Bash(pnpm add:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(npm:*)",
+      "Bash(git push:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}

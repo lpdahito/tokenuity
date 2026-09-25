@@ -134,7 +134,7 @@ export default async (
       return
     }
 
-    tokenAge = ceiling - token.createdAt
+    tokenAge = ceiling - Math.floor(token.createdAt.getTime() / 1000)
     const holdingAge = ceiling - holding.createdAt
     // const stopLossTimeForFull = (20 * 60)
 

@@ -5,7 +5,6 @@ import { ethers } from 'ethers'
 import { contracts } from '../contracts/contracts.js'
 
 import { chain } from '../config/chain.js'
-import isLocal from './../config/isLocal.js'
 import { providers } from '../config/provider.js'
 import { Logger } from '../config/logger.js'
 
@@ -24,24 +23,20 @@ interface HolderFromTransfer {
   balance: bigint
 }
 
-interface HolderInsertDataFromTransfer {
-  updateOne: {
-    filter: {
-      token: string
-      address: string
-    },
-    update: {
-      block: number
-      // balance: string
-    },
-    upsert: boolean
-  }
+interface StoredHolderBalance {
+  token: string
+  address: string
+  balance?: string
 }
+
+type HolderWriteData = Parameters<typeof Holder.bulkWrite>[0][number]
 
 const {
   CheckModel: Check,
   HolderModel: Holder,
 } = models
+
+const READ_CHUNK_SIZE = 1000
 
 export default async (
   logs: ethers.Log[],
@@ -49,18 +44,14 @@ export default async (
 ): Promise<void> => {
   const extractionStart = performance.now()
 
-  const holderInsertDataArray: HolderInsertDataFromTransfer[] = []
-
   let holderCount = 0
   let transferCount = 0
 
   let execTime = '0'
   let loopExecTime = '0'
   let timePerLog = '0'
-  
-  let holders: HoldersFromTransfers = {}
 
-  // logs = logs.reverse()
+  const holders: HoldersFromTransfers = {}
 
   let currentBlock = 0
 
@@ -75,7 +66,7 @@ export default async (
 
     highestTimestamp = block.timestamp
 
-    for (let log of logs) {
+    for (const log of logs) {
       if (log.removed) continue
       if (log.topics.length !== 3 || ethers.dataLength(log.data) !== 32) continue
 
@@ -87,31 +78,23 @@ export default async (
 
         timestamp = Math.floor(highestTimestamp - timeSpread)
       }
-    
-      let parsedLog = iface.parseLog({
-        topics: log.topics.map((x) => x), data: log.data
-      })
-      
+
+      const parsedLog = iface.parseLog(log)
       if (!parsedLog) continue
 
       const token = log.address
 
-      const from = parsedLog.args[0]
-      const to = parsedLog.args[1]
+      const from: string = parsedLog.args[0]
+      const to: string = parsedLog.args[1]
+      const amount: bigint = parsedLog.args[2]
 
-      const amount = parsedLog.args[2]
-
-      const senderKey = token + ':' + from
-      const receiverKey = token + ':' + to
-
-      // console.log(senderKey)
-      // console.log(receiverKey)
-
-      // Sender
+      // Sender (skip mints)
       if (from !== ethers.ZeroAddress) {
+        const senderKey = token + ':' + from
+
         if (!(senderKey in holders)) {
           holders[senderKey] = {
-            token, address: from, block: currentBlock, balance: BigInt(-amount)
+            token, address: from, block: currentBlock, balance: -amount
           }
 
           holderCount++
@@ -121,10 +104,12 @@ export default async (
         }
       }
 
-      // Receiver
+      // Receiver (includes the zero address, so its balance tracks burned supply)
+      const receiverKey = token + ':' + to
+
       if (!(receiverKey in holders)) {
         holders[receiverKey] = {
-          token, address: to, block: currentBlock, balance: BigInt(amount)
+          token, address: to, block: currentBlock, balance: amount
         }
 
         holderCount++
@@ -136,28 +121,32 @@ export default async (
       transferCount++
     }
 
-    for (const key in holders) {
-      holderInsertDataArray.push(<HolderInsertDataFromTransfer>{
+    const holderList = Object.values(holders)
+    const savedHolderBalances = await getSavedHolderBalances(holderList)
+
+    const holderWriteData: HolderWriteData[] = holderList.map((h) => {
+      const key = h.token + ':' + h.address
+      const newBalance = (savedHolderBalances.get(key) ?? 0n) + h.balance
+
+      return {
         updateOne: {
-          filter: {
-            token: holders[key].token,
-            address: holders[key].address
-          },
+          filter: { token: h.token, address: h.address },
           update: {
-            block: holders[key].block,
+            $set: { balance: newBalance.toString() },
+            $max: { block: h.block }
           },
           upsert: true
         }
-      })
-    }
+      }
+    })
 
     const loopExtractionEnd = performance.now()
     loopExecTime = ((loopExtractionEnd - extractionStart) / 1000).toFixed(2)
 
     await saveDataFromTransfers(
-      holderInsertDataArray
+      holderWriteData
     )
-  } catch (err: any)  {
+  } catch (err: any) {
     console.log(err)
 
     Logger.err({ error: err, report: true })
@@ -171,36 +160,65 @@ export default async (
 
     execTime = _execTime.toFixed(2)
 
-    const check = await Check.create({
-      type: CheckTypes.transferExtraction,
-      execTime, loopExecTime, timePerLog, transferCount, holderCount
-    })
+    try {
+      const check = await Check.create({
+        type: CheckTypes.transferExtraction,
+        execTime, loopExecTime, timePerLog, transferCount, holderCount
+      })
 
-    // if (isLocal) { console.log(check) }
-    console.log(check)
+      console.log(check)
+    } catch (err) {
+      Logger.err({ error: err, report: true })
+    }
   }
 }
 
-const saveDataFromTransfers = async (
-  holderInsertDataArray: HolderInsertDataFromTransfer[],
-): Promise<void> => {
-  let promises = []
+/**
+ * Loads the currently stored balance for every (token, address) pair
+ * touched in this batch. Reads are chunked and grouped by token so the
+ * query can use the { token: 1, address: 1 } index.
+ */
+const getSavedHolderBalances = async (
+  list: HolderFromTransfer[]
+): Promise<Map<string, bigint>> => {
+  const result = new Map<string, bigint>()
 
-  try {
-    if (holderInsertDataArray.length) {
-      promises.push(
-        Holder.bulkWrite(
-          holderInsertDataArray, {
-            ordered: false, writeConcern: { w: 0, j: false }
-          }
-        )
-      )
+  for (let i = 0; i < list.length; i += READ_CHUNK_SIZE) {
+    const chunk = list.slice(i, i + READ_CHUNK_SIZE)
+
+    const byToken = new Map<string, string[]>()
+
+    for (const h of chunk) {
+      const addresses = byToken.get(h.token)
+      if (addresses) addresses.push(h.address)
+      else byToken.set(h.token, [h.address])
     }
 
-    if (promises.length) {
-      await Promise.all(promises)
+    const docs = await Holder.find(
+      {
+        $or: [...byToken].map(([token, addresses]) => ({
+          token, address: { $in: addresses }
+        }))
+      },
+      { token: 1, address: 1, balance: 1, _id: 0 }
+    ).lean<StoredHolderBalance[]>()
+
+    for (const d of docs) {
+      result.set(d.token + ':' + d.address, BigInt(d.balance ?? '0'))
     }
-  } catch (err) {
-    console.log(err)
   }
+
+  return result
+}
+
+const saveDataFromTransfers = async (
+  holderWriteData: HolderWriteData[]
+): Promise<void> => {
+  if (!holderWriteData.length) return
+
+  // Acknowledged writes: the next batch reads these balances back,
+  // so failures must surface instead of being silently dropped (w: 0).
+  await Holder.bulkWrite(
+    holderWriteData, { ordered: false }
+  )
 }
