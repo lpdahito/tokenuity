@@ -1,5 +1,3 @@
-import { performance } from 'perf_hooks'
-
 import { ethers } from 'ethers'
 
 import { contracts } from '../contracts/contracts.js'
@@ -42,14 +40,8 @@ export default async (
   logs: ethers.Log[],
   highestBlock: number
 ): Promise<void> => {
-  const extractionStart = performance.now()
-
   let holderCount = 0
   let transferCount = 0
-
-  let execTime = '0'
-  let loopExecTime = '0'
-  let timePerLog = '0'
 
   const holders: HoldersFromTransfers = {}
 
@@ -140,9 +132,6 @@ export default async (
       }
     })
 
-    const loopExtractionEnd = performance.now()
-    loopExecTime = ((loopExtractionEnd - extractionStart) / 1000).toFixed(2)
-
     await saveDataFromTransfers(
       holderWriteData
     )
@@ -150,26 +139,6 @@ export default async (
     console.log(err)
 
     Logger.err({ error: err, report: true })
-  } finally {
-    const extractionEnd = performance.now()
-    const _execTime = (extractionEnd - extractionStart) / 1000
-
-    if (holderCount) {
-      timePerLog = (_execTime / holderCount).toFixed(4)
-    }
-
-    execTime = _execTime.toFixed(2)
-
-    try {
-      const check = await Check.create({
-        type: CheckTypes.transferExtraction,
-        execTime, loopExecTime, timePerLog, transferCount, holderCount
-      })
-
-      console.log(check)
-    } catch (err) {
-      Logger.err({ error: err, report: true })
-    }
   }
 }
 

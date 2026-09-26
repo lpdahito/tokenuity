@@ -15,15 +15,23 @@ export enum DexProtocols {
 }
 
 export enum CheckTypes {
-  extraction,
-  scanBuy,
-  scanSell,
-  poolExtraction,
-  swapExtraction,
-  transferExtraction,
-  tokenCompute,
-  cleanup
+  findPools = 0,
+  findSwaps = 1,
+  findTransfers = 2,
+  computeTokenData = 3,
+  cleanUp = 4,
+
+  scanBuy = 5,
+  scanSell = 6,
 }
+
+export const CURSOR_TYPES = [
+  CheckTypes.findPools,
+  CheckTypes.findSwaps,
+  CheckTypes.findTransfers
+] as const
+
+export type CursorType = (typeof CURSOR_TYPES)[number]
 
 export enum Launchpads {
   unknown   = 0,
@@ -133,6 +141,13 @@ export interface ICreator {
   createdAt: number
   successCount: number
   // tokens: Array<string>
+}
+
+export interface ICursor {
+  type: CursorType
+  lastBlock: number
+  createdAt: Date
+  updatedAt: Date
 }
 
 export interface IHolder {

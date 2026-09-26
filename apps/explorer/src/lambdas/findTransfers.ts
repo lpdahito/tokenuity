@@ -1,3 +1,4 @@
+import { performance } from 'perf_hooks'
 import type { HydratedDocument } from 'mongoose'
 
 import { chain } from '../config/chain.js'
@@ -13,14 +14,19 @@ import updateHoldersFromTransfers from './../jobs/updateHoldersFromTransfers.js'
 
 import * as models from '@tokenuity/store'
 
-import { IPrice } from '@tokenuity/types'
+import { CheckTypes, IPrice } from '@tokenuity/types'
 
 const {
+  CheckModel: Check,
   HolderModel: Holder
 } = models
 
+let execTime = '0'
+
 export default async (
 ): Promise<void> => {
+  const start = performance.now()
+
   let startBlock = 0
   let baseTokenPrice = BigInt(0)
 
@@ -56,5 +62,19 @@ export default async (
     await updateHoldersFromTransfers(logs, endBlock)
   } catch (err: any) {
     Logger.err({ error: err, report: true })
+  } finally {
+    const end = performance.now()
+    execTime = ((end - start) / 1000).toFixed(2)
+
+    try {
+      const check = await Check.create({
+        type: CheckTypes.findTransfers,
+        execTime
+      })
+
+      console.log(check)
+    } catch (err) {
+      Logger.err({ error: err, report: true })
+    }
   }
 }

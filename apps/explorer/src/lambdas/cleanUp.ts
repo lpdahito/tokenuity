@@ -15,11 +15,11 @@ const {
   HolderModel: Holder,
 } = models
 
+let execTime = '0'
+
 export default async (
 ): Promise<void> => {
-  const cleanupStart = performance.now()
-
-  let execTime = '0'
+  const start = performance.now()
 
   let tokenCount = 0
   let holderCount = 0
@@ -58,15 +58,18 @@ export default async (
     console.log(err)
     Logger.err({ error: err, report: true })
   } finally {
-    const cleanupEnd = performance.now()
-    execTime = ((cleanupEnd - cleanupStart) / 1000).toFixed(2)
+    const end = performance.now()
+    execTime = ((end - start) / 1000).toFixed(2)
 
-    const check = await Check.create({
-      type: CheckTypes.cleanup,
-      execTime, tokenCount, holderCount
-    })
+    try {
+      const check = await Check.create({
+        type: CheckTypes.cleanUp,
+        execTime, tokenCount, holderCount
+      })
 
-    // if (isLocal) { console.log(check) }
-    console.log(check)
+      console.log(check)
+    } catch (err) {
+      Logger.err({ error: err, report: true })
+    }
   }
 }
