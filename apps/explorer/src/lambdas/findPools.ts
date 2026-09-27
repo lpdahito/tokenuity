@@ -1,106 +1,88 @@
 import { performance } from 'perf_hooks'
 
-import type { HydratedDocument } from 'mongoose'
-
 import { chain } from '../config/chain.js'
 import { Logger } from '../config/logger.js'
 import addresses from './../config/addresses.js'
 import { providers } from '../config/provider.js'
+
+import { nextBlockRange } from './../utils/blockRange.js'
 
 import { contracts } from '../contracts/contracts.js'
 
 import extractData from './../jobs/extractDataForFindPools.js'
 
 import * as models from '@tokenuity/store'
+import { advanceCursor, getLastBlock } from '@tokenuity/store'
 
 
 import { CheckTypes } from '@tokenuity/types'
 
 const {
   CheckModel: Check,
-  PoolModel: Pool,
 } = models
 
-let execTime = '0'
+type PoolSource = { addresses: string[]; topics: string[] }
+
+// Resolved once at startup, not on every tick.
+const POOL_SOURCES: Record<string, PoolSource> = {
+  bsc: {
+    addresses: [addresses.pancakeswap.v2.factory],
+    topics: [contracts.pancakeswapv2.pairCreatedEventSignature],
+  },
+  base: {
+    addresses: [
+      addresses.uniswap.v2.factory,
+      addresses.uniswap.v3.factory,
+      addresses.uniswap.v4.poolManager,
+    ],
+    topics: [
+      contracts.uniswapv2.pairCreatedEventSignature,
+      contracts.uniswapv3.poolCreatedEventSignature,
+      contracts.uniswapv4.poolManagerInitializeEventSignature,
+    ],
+  },
+}
+
+const source = POOL_SOURCES[chain.name]
+
+if (!source) {
+  throw new Error(`[findPools] no pool sources configured for chain "${chain.name}"`)
+}
 
 export default async (
 ): Promise<void> => {
   const start = performance.now()
-
-  let startBlock = 0
-
-  let logAddresses: string[] = []
-
-  let topics = [
-    contracts.uniswapv2.pairCreatedEventSignature,
-    contracts.uniswapv3.poolCreatedEventSignature,
-    contracts.uniswapv4.poolManagerInitializeEventSignature,
-  ]
-
-  switch (chain.name) {
-    case 'base':
-      topics = [
-        contracts.uniswapv2.pairCreatedEventSignature,
-        contracts.uniswapv3.poolCreatedEventSignature,
-        contracts.uniswapv4.poolManagerInitializeEventSignature,
-      ]
-
-      logAddresses = [
-        addresses.uniswap.v2.factory,
-        addresses.uniswap.v3.factory,
-        addresses.uniswap.v4.poolManager
-      ]
-      
-      break;
-
-    case 'bsc':
-      topics = [
-        contracts.pancakeswapv2.pairCreatedEventSignature,
-        // contracts.pancakeswapv3.poolCreatedEventSignature
-      ]
-
-      logAddresses = [
-        addresses.pancakeswap.v2.factory,
-        // addresses.pancakeswap.v3.factory
-      ]
-      
-      break;
-  }
+  let scanned: { fromBlock: number; toBlock: number; logs: number } | null = null
 
   try {
-    const endBlock = await providers[0].getBlockNumber()
+    const head = await providers[0].getBlockNumber()
+    const lastBlock = await getLastBlock(CheckTypes.findPools)
 
-    const latestCreatedPool = await Pool.find({}, '-_id block').sort({ block: -1 }).limit(1).lean()
-    if (latestCreatedPool.length && latestCreatedPool[0].block) startBlock = latestCreatedPool[0].block + 1
+    const range = nextBlockRange(head, lastBlock, chain.blockSpread)
+    if (!range) return
 
-    if (endBlock - startBlock > chain.blockSpread) {
-      startBlock = endBlock - chain.blockSpread
+    const { fromBlock, toBlock } = range
+
+    const logs = await providers[0].getLogs({
+      fromBlock,
+      toBlock,
+      address: source.addresses,
+      topics: [ source.topics ],
+    })
+
+    if (logs.length) {
+      await extractData(logs, toBlock)
     }
 
-    let filter = {
-      fromBlock: startBlock,
-      toBlock: endBlock,
-      address: logAddresses,
-      topics: [ topics ]
-    }
-
-    const logs = await providers[0].getLogs(filter)
-    if (!logs.length) { return }
-
-    await extractData(logs, endBlock)
+    await advanceCursor(CheckTypes.findPools, toBlock)
+    scanned = { fromBlock, toBlock, logs: logs.length }
   } catch (err: any) {
-    console.log(err)
     Logger.err({ error: err, report: true })
   } finally {
-    const end = performance.now()
-    execTime = ((end - start) / 1000).toFixed(2)
+    const execTime = ((performance.now() - start) / 1000).toFixed(2)
 
     try {
-      const check = await Check.create({
-      type: CheckTypes.findPools,
-      execTime,
-    })
-    
+      await Check.create({ type: CheckTypes.findPools, execTime, ...scanned })
     } catch(err) {
       Logger.err({ error: err, report: true })
     }

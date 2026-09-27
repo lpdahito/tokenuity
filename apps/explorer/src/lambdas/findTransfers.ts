@@ -1,78 +1,77 @@
 import { performance } from 'perf_hooks'
-import type { HydratedDocument } from 'mongoose'
+import * as mongoose from 'mongoose'
 
 import { chain } from '../config/chain.js'
 import { Logger } from '../config/logger.js'
-import addresses from './../config/addresses.js'
 import { providers } from '../config/provider.js'
 
-import { contracts } from '../contracts/contracts.js'
+import { nextBlockRange } from './../utils/blockRange.js'
 
-import { quoteToken } from './../helpers/pools.js'
+import { contracts } from '../contracts/contracts.js'
 
 import updateHoldersFromTransfers from './../jobs/updateHoldersFromTransfers.js'
 
 import * as models from '@tokenuity/store'
+import { advanceCursor, getLastBlock } from '@tokenuity/store'
 
-import { CheckTypes, IPrice } from '@tokenuity/types'
+import { CheckTypes } from '@tokenuity/types'
 
 const {
   CheckModel: Check,
-  HolderModel: Holder
 } = models
 
-let execTime = '0'
+const topics = [
+  contracts.erc20.transferSignature
+]
 
 export default async (
 ): Promise<void> => {
   const start = performance.now()
-
-  let startBlock = 0
-  let baseTokenPrice = BigInt(0)
-
-  let price: HydratedDocument<IPrice> | null = null
-
-  let topics = [
-    contracts.erc20.transferSignature
-  ]
+  let scanned: { fromBlock: number; toBlock: number; logs: number } | null = null
 
   try {
-    const endBlock = await providers[0].getBlockNumber()
+    const head = await providers[0].getBlockNumber()
+    const poolsBlock = await getLastBlock(CheckTypes.findPools)
 
-    const latestUpdatedHolder = await Holder.find({}, '-_id block').sort({ block: -1 }).limit(1).lean()
-    if (latestUpdatedHolder.length && latestUpdatedHolder[0].block) startBlock = latestUpdatedHolder[0].block + 1
+    if (poolsBlock === null) return   // findPools hasn't run yet, so wait for it
 
-    if (endBlock - startBlock > chain.blockSpread) {
-      startBlock = endBlock - chain.blockSpread
+    const lastBlock = await getLastBlock(CheckTypes.findTransfers)
+    const range = nextBlockRange(Math.min(head, poolsBlock), lastBlock, chain.blockSpread)
+
+    if (!range) return
+
+    const { fromBlock, toBlock } = range
+
+    const logs = await providers[0].getLogs({
+      fromBlock,
+      toBlock,
+      // address: [],
+      topics: [ topics ],
+    })
+
+    if (logs.length) {
+      await updateHoldersFromTransfers(logs, toBlock)
     }
 
-    let filter = {
-      fromBlock: startBlock,
-      toBlock: endBlock,
-      address: [],
-      topics: [ topics ]
+    const session = await mongoose.startSession()
+
+    try {
+      await session.withTransaction(async () => {
+        if (logs.length) await updateHoldersFromTransfers(logs, toBlock, session)
+        await advanceCursor(CheckTypes.findTransfers, toBlock, session)
+      })
+    } finally {
+      await session.endSession()
     }
 
-    const logs = await providers[0].getLogs(filter)
-    // console.log(logs)
-    console.log(logs.length)
-
-    if (!logs.length) return
-
-    await updateHoldersFromTransfers(logs, endBlock)
+    scanned = { fromBlock, toBlock, logs: logs.length }
   } catch (err: any) {
     Logger.err({ error: err, report: true })
   } finally {
-    const end = performance.now()
-    execTime = ((end - start) / 1000).toFixed(2)
+    const execTime = ((performance.now() - start) / 1000).toFixed(2)
 
     try {
-      const check = await Check.create({
-        type: CheckTypes.findTransfers,
-        execTime
-      })
-
-      console.log(check)
+      await Check.create({ type: CheckTypes.findTransfers, execTime, ...scanned })
     } catch (err) {
       Logger.err({ error: err, report: true })
     }

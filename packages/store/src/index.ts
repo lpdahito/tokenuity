@@ -5,6 +5,7 @@ export { connect, close } from './client'
 // models
 export { BuyModel } from './models/Buy'
 export { CheckModel } from './models/Check'
+export { CursorModel } from './models/Cursor'
 export { CreatorModel } from './models/Creator'
 export { HolderModel } from './models/Holder'
 export { HoldingModel } from './models/Holding'
@@ -24,5 +25,6 @@ export { TradingReportModel } from './models/TradingReport'
 export { TransferModel } from './models/Transfer'
 
 // queries
+export * from './queries/cursors'
 export * from './queries/tokens'
 // export * from './queries/pools'
