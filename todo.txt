@@ -1,0 +1,3 @@
+Add fields to Token model:
+- totalSupply
+- circulatingSupply
