@@ -44,82 +44,6 @@ export enum Launchpads {
   zora      = 6
 }
 
-export interface LimitsForSwaps {
-  amountIn: number,
-  takeProfit: number,
-  stopLoss: number,
-  timeMax: number,
-  tryCountMax: number,
-  protocols: Array<DexProtocols>,
-  mustBeVerified: boolean,
-  mustBeRenounced: boolean,
-  ownerMustNotBeNull: boolean,
-  mustNotContainEmojis: boolean,
-  lockedPercentageMin: number,
-  tokenAgeMin: number,
-  tokenAgeMax: number,
-  swapCountMin: number,
-  swapCountMax: number,
-  holderCountMin: number,
-  swapsPerMinuteMin: number,
-  liquidityInUsdMin: number,
-  liquidityInUsdMax: number,
-  buyCountPctMin: number,
-  buyCountPctMax: number
-  buySellVolumeRatioMin: number,
-  buySellVolumeRatioMax: number,
-  buyVolumeInUsdMedianMin: number,
-  unwanted: Array<string>
-}
-
-export enum Triggers {
-  takeProfit,
-  stopLoss,
-  time
-}
-
-export interface IBuy {
-  tokenAddress: string,
-  tx: string | null,
-  status: string, // pending, success, failed, tracked
-  attempts: number,
-  tokenAgeOnTx: number,
-  amount: string,
-  otherAmount: string,
-  amountInUsd: number,
-  swapIndex: number,
-  liquidityInBase?: string,
-  liquidityInUsd?: number,
-  baseTokenPrice: string,
-  swapCount?: number,
-  swapsPerMinute?: number,
-  holderCount?: number,
-  tokenHoldersWithOne?: number,
-  tokenHoldersWithTwenty?: number,
-  tokenHoldersWithOneHundred?: number,
-  tokenHoldersWithOneThousand?: number,
-  coinHoldersWithOne?: number,
-  coinHoldersWithTwenty?: number,
-  coinHoldersWithOneHundred?: number,
-  coinHoldersWithOneThousand?: number,
-  holderCountRatio?: number,
-  buyCountPct?: number,
-  buySellVolumeRatio?: number,
-  // buyVolumeInUsdMedian?: number | null,
-  // buyVolumeInUsdMean?: number | null,
-  // buyVolumeInUsdIqr?: number | null,
-  // sellVolumeInUsdMedian?: number | null,
-  // sellVolumeInUsdMean?: number | null,
-  // sellVolumeInUsdIqr?: number | null,
-  volumeInUsdMedian?: number | null,
-  volumeInUsdMean?: number | null,
-  volumeInUsdIqr?: number | null,
-  messages: Array<string>,
-  updatedAt: number,
-  createdAt: number,
-  boughtAt: number | null
-}
-
 export interface ICheck {
   createdAt: Date
   type: CheckTypes
@@ -135,14 +59,6 @@ export interface ICheck {
   rejectedPoolCount?: number
 }
 
-export interface ICreator {
-  address: string
-  failCount: number
-  createdAt: number
-  successCount: number
-  // tokens: Array<string>
-}
-
 export interface ICursor {
   type: CursorType
   lastBlock: number
@@ -156,32 +72,6 @@ export interface IHolder {
   address: string,
   balance: string,
   createdAt: Date,
-}
-
-export interface IHolding {
-  address: string,
-  // quotedAmount: string,
-  amount: string,
-  avgPriceInBase: string,
-  oldAvgPriceInBase: string | null,
-  tryCount: number,
-  updatedAt: number,
-  createdAt: number,
-}
-
-export interface ILog {
-  logType: string, // totalSwapCount, tokenSwapCount, tokenTracked
-  token?: {
-    name: string,
-    symbol: string,
-    address: string,
-    createdAt?: number,
-  },
-  pump?: boolean,
-  swapCount: number,
-  buyCount: number,
-  sellCount: number,
-  createdAt: number,
 }
 
 export interface IPool {
@@ -209,99 +99,6 @@ export interface IPool {
   firstSwaps: Array<Array<string>>
   // renouncedPercentage: number
   // lpLockedOrRenounced: boolean
-}
-
-export interface IPortfolio {
-  wallet: string,
-  balance: string,
-  auto: boolean,
-  createdAt: number,
-  updatedAt: number
-}
-
-export interface IPortfolioBalance {
-  body: string
-  wallet: string
-  createdAt: number
-}
-
-export interface IPrice {
-  baseToken: string,
-  virtual?: string,
-  createdAt: number
-}
-
-export interface ISelector {
-  body: string,
-  unwanted: boolean | null,
-  goodCount: number,
-  badCount: number,
-  lastGoods?: Array<string>,
-  lastBads?: Array<string>,
-  lastGoodTime?: number,
-  lastBadTime?: number,
-  updatedAt: number,
-  createdAt: number,
-}
-
-export interface ISell {
-  tokenAddress: string,
-  tx: string | null,
-  status: string, // pending, success, failed, tracked
-  attempts: number,
-  txAttempts: number,
-  multiple: number,
-  prices: Array<string>,
-  stopLossCount: number,
-  goodMultiple: number | null,
-  remaining: boolean,
-  lowestMultiple: number,
-  highestMultiple: number,
-  prevHighestMultiple: number,
-  timeTo2x: number | null,
-  timeTo3x: number | null,
-  timeTo4x: number | null,
-  timeToPoint90x: number | null,
-  timeToPoint85x: number | null,
-  timeToPoint75x: number | null,
-  timeToPoint50x: number | null,
-  timeToPoint25x: number | null,
-  lowestBeforeTx: number | null,
-  highestBeforeTx: number | null,
-  tokenAgeOnTx: number,
-  amount: string,
-  amountInUsd: number,
-  baseTokenPrice: string,
-  siphoned: boolean,
-  messages: Array<string>,
-  trigger: Triggers | null,
-  updatedAt: number,
-  createdAt: number,
-  soldAt: number | null
-}
-
-export interface ISnippet {
-  body: string
-  scope: string
-  tokens: string[]
-  blocked: boolean
-  badStreak: number
-  createdAt: number
-  reviewed: boolean
-  badTokens: string[]
-  goodTokens: string[]
-  badAmounts: number[]
-  goodAmounts: number[]
-  trustScore: number | null
-}
-
-export interface IStatReport {
-  growth: string
-  txCount: number
-  rugPulls: number
-  successfulExits: number
-  highestMultiple: number
-  createdAt: number
 }
 
 export interface IToken {
@@ -342,21 +139,3 @@ export interface ITokenSwap {
   // recipient: string | null
 }
 
-export interface ITradingReport {
-  count: number
-  profit: string
-  createdAt: number
-  bestProfit: string
-  bestMultiple: number
-  results: Array<{ count: number, multiple: number, profit: string }>
-}
-
-export interface ITransfer {
-  tx: string
-  to: string
-  from: string
-  block: number
-  token: string
-  logIndex: number
-  createdAt: Date
-}
