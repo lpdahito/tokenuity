@@ -1,6 +1,6 @@
 // connection lifecycle
 export { connect, close } from './client'
-// export { ensureIndexes } from './indexes'
+export { ensureIndexes } from './indexes'
 
 // models
 export { BuyModel } from './models/Buy'

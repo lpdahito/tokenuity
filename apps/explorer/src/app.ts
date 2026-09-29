@@ -1,21 +1,6 @@
-// docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=8453 --env INSTANCE_FUNCTION_TYPE=findPools -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/app.js")'
-// docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=8453 --env INSTANCE_FUNCTION_TYPE=findSwaps -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/app.js")'
+import { connect, ensureIndexes } from '@tokenuity/store'
 
-// docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=56 --env INSTANCE_FUNCTION_TYPE=findPools -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/app.js")'
-// docker run -it --rm --link mongo-server --env-file .env --env CHAIN_ID=56 --env INSTANCE_FUNCTION_TYPE=findSwaps -v /Users/lpdahito/Projects/tokenuity/trends-explorer/dist:/app/dist explorer node -e 'require("./dist/app.js")'
-
-import * as cron from 'node-cron'
-
-import * as models from '@tokenuity/store'
-import { connect } from '@tokenuity/store'
-
-import { chain } from './config/chain.js'
-import isLocal from './config/isLocal.js'
 import { Logger } from './config/logger.js'
-import addresses from './config/addresses.js'
-import { databaseUrl } from './config/databaseUrl.js'
-
-import { findOrCreateToken } from './helpers/tokens.js'
 
 import cleanUp from './lambdas/cleanUp.js'
 
@@ -25,299 +10,59 @@ import findTransfers from './lambdas/findTransfers.js'
 
 import computeTokenData from './lambdas/computeTokenData.js'
 
-import findTrades from './lambdas/findTrades.js'
+/** Each container runs one function, selected by INSTANCE_FUNCTION_TYPE. Interval is the wait after a run completes. */
+const functions = {
+  findPools: { run: findPools, intervalSeconds: 10 },
+  findSwaps: { run: findSwaps, intervalSeconds: 10 },
+  findTransfers: { run: findTransfers, intervalSeconds: 10 },
+  computeTokenData: { run: computeTokenData, intervalSeconds: 30 },
+  cleanUp: { run: cleanUp, intervalSeconds: 5 * 60 },
+}
 
-// import scanBuyOpps from './lambdas/serverless/scanBuyOpps.js'
-// import scanSellOpps from './lambdas/serverless/scanSellOpps.js'
+type FunctionName = keyof typeof functions
 
-const {
-  BuyModel: Buy,
-  PoolModel: Pool,
-  SellModel: Sell,
-  TokenModel: Token,
-  PriceModel: Price,
-  CheckModel: Check,
-  HolderModel: Holder,
-  HoldingModel: Holding,
-  SnippetModel: Snippet,
-  SelectorModel: Selector,
-  TokenSwapModel: TokenSwap,
-} = models
+const isFunctionName = (name: string | undefined): name is FunctionName =>
+  name !== undefined && Object.hasOwn(functions, name)
 
-const main = async () => {
-  let seconds = 0
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-  if (isLocal) {
-    setInterval(() => {
-      seconds++
-      if (seconds > 60) {
-        console.log('Existing on local after 60 seconds.')
-        process.exit(0)
-      }
-    }, 1000)
-  }
+/** Do the work, then wait from completion, so two runs never overlap. */
+const loop = async (name: FunctionName) => {
+  const { run, intervalSeconds } = functions[name]
 
-  try {
-    await connect()
-    console.log('Connected to database.')
-
-    switch (process.env.INSTANCE_FUNCTION_TYPE) {
-      case 'findPools':
-        _findPools(); break;
-
-      case 'findSwaps':
-        _findSwaps(); break;
-
-      case 'findTransfers':
-        _findTransfers(); break;
-
-      case 'computeTokenData':
-        _computeTokenData(); break;
-
-      case 'findTrades':
-        await _findTrades(); break;
-
-      case 'cleanUp':
-        _cleanUp(); break;
+  while (true) {
+    try {
+      await run()
+    } catch (err: any) {
+      Logger.err({ error: err, report: true })
     }
 
-    console.log('Successfuly reached end of main function.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
+    await sleep(intervalSeconds * 1000)
   }
 }
 
-main();
+const main = async () => {
+  const name = process.env.INSTANCE_FUNCTION_TYPE
 
-// keep Node alive even if run() finishes quickly
-setInterval(() => {}, 1 << 30);
-
-const _findPools = async () => {
-  console.log('Inside _findPools.')
-
-  try {
-    await Buy.collection.dropIndexes()
-    await Sell.collection.dropIndexes()
-    await Pool.collection.dropIndexes()
-    await Token.collection.dropIndexes()
-    await Price.collection.dropIndexes()
-    await Check.collection.dropIndexes()
-    await Holder.collection.dropIndexes()
-    await Holding.collection.dropIndexes()
-    await Snippet.collection.dropIndexes()
-    await Selector.collection.dropIndexes()
-    await TokenSwap.collection.dropIndexes()
-
-    await Price.collection.createIndex({ createdAt: -1 })
-    await Check.collection.createIndex({ createdAt: -1 })
-    await Check.collection.createIndex({ type: 1, createdAt: 1  })
-    await Pool.collection.createIndex({ address: 1 }, { unique: true })
-    await Token.collection.createIndex({ address: 1 }, { unique: true })
-    await Holder.collection.createIndex({ token: 1, address: 1 }, { unique: true })
-    await Holding.collection.createIndex({ address: 1 }, { unique: true })
-    await Buy.collection.createIndex({ tokenAddress: 1 }, { unique: true })
-    await Sell.collection.createIndex({ tokenAddress: 1 }, { unique: true })
-
-    await Selector.collection.createIndex({ body: 1 }, { unique: true })
-    await TokenSwap.collection.createIndex({ tx: 1 }, { unique: true })
-    await Snippet.collection.createIndex({ scope: 1, body: 1 }, { unique: true })
-
-    const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
-    if (!baseToken) return console.log('Could not find or create baseToken...')
-
-    let isRunning = false
-
-    cron.schedule('*/10 * * * * *', async () => {
-      if (isRunning) { return }
-
-      isRunning = true
-
-      try {
-        await findPools()
-      } finally {
-        isRunning = false
-      }
-    })
-
-    console.log('Reached end of _findPools.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
+  if (!isFunctionName(name)) {
+    throw new Error(
+      `INSTANCE_FUNCTION_TYPE must be one of ${Object.keys(functions).join(', ')}, got: ${name ?? '(unset)'}`
+    )
   }
+
+  await connect()
+  console.log(`Connected to database. Running ${name}.`)
+
+  // One container owns index builds, so they don't race on startup
+  if (name === 'findPools') {
+    await ensureIndexes()
+    console.log('Indexes in sync.')
+  }
+
+  await loop(name)
 }
 
-const _findSwaps = async () => {
-  console.log('Inside _findSwaps.')
-
-  try {
-    const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
-    if (!baseToken) return console.log('Could not find or create baseToken...')
-
-    let isRunning = false
-
-    cron.schedule('*/10 * * * * *', async () => {
-      if (isRunning) { return }
-
-      isRunning = true
-
-      try {
-        await findSwaps()
-      } finally {
-        isRunning = false
-      }
-    })
-
-    console.log('Reached end of _findSwaps.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
-  }
-}
-
-const _findTransfers = async () => {
-  console.log('Inside _findTransfers.')
-
-  try {
-    const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
-    if (!baseToken) return console.log('Could not find or create baseToken...')
-
-    let isRunning = false
-
-    cron.schedule('*/10 * * * * *', async () => {
-      if (isRunning) { return }
-
-      isRunning = true
-
-      try {
-        await findTransfers()
-      } finally {
-        isRunning = false
-      }
-    })
-
-    console.log('Reached end of _findTransfers.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
-  }
-}
-
-const _computeTokenData = async () => {
-  console.log('Inside _computeTokenData.')
-
-  try {
-    let isRunning = false
-
-    cron.schedule('*/30 * * * * *', async () => {
-      if (isRunning) { return }
-
-      isRunning = true
-
-      try {
-        await computeTokenData()
-      } finally {
-        isRunning = false
-      }
-    })
-
-    console.log('Reached end of _computeTokenData.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
-  }
-}
-
-const _findTrades = async () => {
-  console.log('Inside _findTrades.')
-
-  try {
-    await findTrades()
-
-    console.log('Reached end of _findTrades.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
-  }
-}
-
-const _cleanUp = async () => {
-  console.log('Inside _cleanUp.')
-
-  try {
-    let isRunning = false
-
-    cron.schedule('0 */5 * * * *', async () => {
-      if (isRunning) { return }
-
-      isRunning = true
-
-      try {
-        await cleanUp()
-      } finally {
-        isRunning = false
-      }
-    })
-
-    console.log('Reached end of _cleanUp.')
-  } catch(err: any) {
-    // Logger.err({ error: err, report: true })
-    console.log(err)
-  }
-}
-
-// const _scanBuyOpps = async () => {
-//   console.log('Inside _scanBuyOpps.')
-
-//   try {
-//     const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
-//     if (!baseToken) return console.log('Could not find or create baseToken...')
-
-//     let isRunning = false
-
-//     cron.schedule('*/20 * * * * *', async () => {
-//       if (isRunning) { return }
-
-//       isRunning = true
-
-//       try {
-//         await scanBuyOpps(baseToken)
-//       } finally {
-//         isRunning = false
-//       }
-//     })
-
-//     console.log('Reached end of _scanBuyOpps.')
-//   } catch(err: any) {
-//     // Logger.err({ error: err, report: true })
-//     console.log(err)
-//   }
-// }
-
-// const _scanSellOpps = async () => {
-//   console.log('Inside _scanSellOpps.')
-
-//   try {
-//     const { token: baseToken } = await findOrCreateToken(addresses.tokens.base)
-//     if (!baseToken) return console.log('Could not find or create baseToken...')
-
-//     let isRunning = false
-
-//     cron.schedule('*/15 * * * * *', async () => {
-//       if (isRunning) { return }
-
-//       isRunning = true
-
-//       try {
-//         await scanSellOpps(baseToken)
-//       } finally {
-//         isRunning = false
-//       }
-//     })
-
-//     console.log('Reached end of _scanSellOpps.')
-//   } catch(err: any) {
-//     // Logger.err({ error: err, report: true })
-//     console.log(err)
-//   }
-// }
+main().catch(err => {
+  console.error(err)
+  process.exit(1)
+})
