@@ -57,17 +57,6 @@ interface UpdateData {
   }
 }
 
-interface UnfollowedUpdateData {
-  updateOne: {
-    filter: {
-      address: string
-    },
-    update: {
-      lastSwap: number
-    }
-  }
-}
-
 interface PoolLiquidities {
   pools: Array<{ pool: HydratedDocument<IPool>, liquidity: bigint }>,
   total: bigint
@@ -463,63 +452,6 @@ export const generateEtokenData = (
   // }
 
   return eTokens
-}
-
-const _updateUnfollowedToken = async (
-  token: HydratedDocument<IToken>,
-  ceiling: number,
-): Promise<UnfollowedUpdateData> => {
-  try {
-    if (token.lastSwap < ceiling) {
-      token.lastSwap = ceiling
-    }
-  } catch (err: any) {
-    Logger.err({ error: err, report: true })
-  } finally {
-    return {
-      updateOne: {
-        filter: {
-          address: token.address
-        },
-        update: {
-          lastSwap: token.lastSwap
-        }
-      }
-    }
-  }
-}
-
-export const updateUnfollowedTokens = async (
-  tokens: Array<HydratedDocument<IToken>>,
-  ceiling: number,
-): Promise<void> => {
-  try {
-    let promises: Array<Promise<UnfollowedUpdateData>> = []
-    for (let token of tokens) {
-      promises.push(
-        _updateUnfollowedToken(token, ceiling)
-      )
-    }
-
-    let bulkWriteArray: Array<UnfollowedUpdateData> = []
-    if (promises.length) {
-      bulkWriteArray = await Promise.all(promises)
-    }
-
-    // for (let data of bulkWriteArray) {
-    //   console.log(data.updateOne.update.lastPriceInBase)
-    // }
-
-    // console.log(bulkWriteArray)
-    
-    await Token.bulkWrite(
-      bulkWriteArray, { ordered: false }
-    )
-
-    // console.log(resp)
-  } catch (err: any) {
-    Logger.err({ error: err, report: true })
-  }
 }
 
 export const isOwnerRenounced = async (

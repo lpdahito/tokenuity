@@ -109,22 +109,9 @@ export interface IToken {
   address: string
   follow: boolean
   decimals: number
-  logIndex: number
-  buyCount: number
-  lastSwap: number
-  swapCount: number
-  sellCount: number
-  totalSupply: string
   lastActivityAt: Date
-  website: string | null
-  isScam: boolean | null
-  creator: string | null
   verified: boolean | null
-  compliant: boolean | null
-  snippetSafe: boolean | null
   launchpad: Launchpads | null
-  ownerRenounced: boolean | null
-  // protocols: Array<DexProtocols>
 }
 
 export interface ITokenSwap {
