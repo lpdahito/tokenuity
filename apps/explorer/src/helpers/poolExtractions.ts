@@ -209,29 +209,21 @@ export const savePoolDataFromExtractions = async (
 ): Promise<void> => {
   let promises = []
 
-  try {
-    if (poolInsertDataArray.length) {
-      promises.push(
-        Pool.bulkWrite(
-          poolInsertDataArray, {
-            ordered: false, writeConcern: { w: 0, j: false }
-          }
-        )
+  if (poolInsertDataArray.length) {
+    promises.push(
+      Pool.bulkWrite(
+        poolInsertDataArray, { ordered: false }
       )
-    }
-
-    if (tokenInsertDataArray.length) {
-      promises.push(
-        Token.bulkWrite(
-          tokenInsertDataArray, {
-            ordered: false, writeConcern: { w: 0, j: false }
-          }
-        )
-      )
-    }
-
-    if (promises.length) { await Promise.all(promises) }
-  } catch (err) {
-    console.log(err)
+    )
   }
+
+  if (tokenInsertDataArray.length) {
+    promises.push(
+      Token.bulkWrite(
+        tokenInsertDataArray, { ordered: false }
+      )
+    )
+  }
+
+  if (promises.length) { await Promise.all(promises) }
 }

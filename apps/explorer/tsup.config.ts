@@ -3,9 +3,6 @@ import { defineConfig } from 'tsup'
 export default defineConfig({
   entry: [
     'src/app.ts',
-    'src/lambdas/findEvents.ts',
-    'src/scripts/updateDatabase.ts',
-    'src/scripts/container.ts',
   ],
   format: ['cjs'],
   target: 'node24',

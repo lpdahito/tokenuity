@@ -49,10 +49,6 @@ export default async (
       topics: [ topics ],
     })
 
-    if (logs.length) {
-      await updateHoldersFromTransfers(logs, toBlock)
-    }
-
     const session = await mongoose.startSession()
 
     try {
