@@ -3,6 +3,7 @@ import { performance } from 'perf_hooks'
 import type { HydratedDocument } from 'mongoose'
 
 import { Logger } from '../config/logger.js'
+import { formatCheck } from './../utils/formatCheck.js'
 import addresses from './../config/addresses.js'
 
 import * as models from '@tokenuity/store'
@@ -37,7 +38,7 @@ export default async (
         execTime,
       })
 
-      console.log(check)
+      console.log(formatCheck(check))
     } catch (err) {
       Logger.err({ error: err, report: true })
     }

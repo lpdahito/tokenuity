@@ -4,6 +4,9 @@ import type { ICheck } from '@tokenuity/types'
 const CheckSchema = new Schema<ICheck>({
   type: { type: Number},
   execTime: { type: String },
+  fromBlock: { type: Number },
+  toBlock: { type: Number },
+  logCount: { type: Number },
   swapCount: { type: Number },
   poolCount: { type: Number },
   tokenCount: { type: Number },

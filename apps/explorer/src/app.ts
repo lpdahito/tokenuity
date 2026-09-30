@@ -26,18 +26,21 @@ const isFunctionName = (name: string | undefined): name is FunctionName =>
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-/** Do the work, then wait from completion, so two runs never overlap. */
+/** Run on a fixed cadence without overlapping: a slow run delays the next one. */
 const loop = async (name: FunctionName) => {
   const { run, intervalSeconds } = functions[name]
 
   while (true) {
+    const start = Date.now()
+
     try {
       await run()
     } catch (err: any) {
       Logger.err({ error: err, report: true })
     }
 
-    await sleep(intervalSeconds * 1000)
+    // Keep a fixed cadence, but never overlap: a slow run just starts the next one late
+    await sleep(Math.max(0, intervalSeconds * 1000 - (Date.now() - start)))
   }
 }
 

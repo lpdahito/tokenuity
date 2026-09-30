@@ -6,6 +6,7 @@ import addresses from './../config/addresses.js'
 import { providers } from '../config/provider.js'
 
 import { nextBlockRange } from './../utils/blockRange.js'
+import { formatCheck } from './../utils/formatCheck.js'
 
 import { contracts } from '../contracts/contracts.js'
 
@@ -15,7 +16,7 @@ import * as models from '@tokenuity/store'
 import { advanceCursor, getLastBlock } from '@tokenuity/store'
 
 
-import { CheckTypes } from '@tokenuity/types'
+import { CheckTypes, ICheck } from '@tokenuity/types'
 
 const {
   CheckModel: Check,
@@ -52,7 +53,7 @@ if (!source) {
 export default async (
 ): Promise<void> => {
   const start = performance.now()
-  let scanned: { fromBlock: number; toBlock: number; logs: number } | null = null
+  let scanned: { fromBlock: number; toBlock: number; logCount: number } | null = null
 
   try {
     const head = await providers[0].getBlockNumber()
@@ -70,21 +71,24 @@ export default async (
       topics: [ source.topics ],
     })
 
+    console.log('logs:', logs.length)
+
     if (logs.length) {
       await extractData(logs, toBlock)
     }
 
     await advanceCursor(CheckTypes.findPools, toBlock)
-    scanned = { fromBlock, toBlock, logs: logs.length }
+    scanned = { fromBlock, toBlock, logCount: logs.length }
   } catch (err: any) {
-    Logger.err({ error: err, report: true })
+    console.log(err)
   } finally {
     const execTime = ((performance.now() - start) / 1000).toFixed(2)
 
     try {
-      await Check.create({ type: CheckTypes.findPools, execTime, ...scanned })
+      const check = await Check.create({ type: CheckTypes.findPools, execTime, ...scanned })
+      console.log(formatCheck(check))
     } catch(err) {
-      Logger.err({ error: err, report: true })
+      console.log(err)
     }
   }
 }

@@ -6,6 +6,7 @@ import { Logger } from '../config/logger.js'
 import { providers } from '../config/provider.js'
 
 import { nextBlockRange } from './../utils/blockRange.js'
+import { formatCheck } from './../utils/formatCheck.js'
 
 import { contracts } from '../contracts/contracts.js'
 
@@ -27,7 +28,7 @@ const topics = [
 export default async (
 ): Promise<void> => {
   const start = performance.now()
-  let scanned: { fromBlock: number; toBlock: number; logs: number } | null = null
+  let scanned: { fromBlock: number; toBlock: number; logCount: number } | null = null
 
   try {
     const head = await providers[0].getBlockNumber()
@@ -60,14 +61,15 @@ export default async (
       await session.endSession()
     }
 
-    scanned = { fromBlock, toBlock, logs: logs.length }
+    scanned = { fromBlock, toBlock, logCount: logs.length }
   } catch (err: any) {
     Logger.err({ error: err, report: true })
   } finally {
     const execTime = ((performance.now() - start) / 1000).toFixed(2)
 
     try {
-      await Check.create({ type: CheckTypes.findTransfers, execTime, ...scanned })
+      const check = await Check.create({ type: CheckTypes.findTransfers, execTime, ...scanned })
+      console.log(formatCheck(check))
     } catch (err) {
       Logger.err({ error: err, report: true })
     }

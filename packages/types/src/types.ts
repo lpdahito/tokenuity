@@ -48,6 +48,9 @@ export interface ICheck {
   createdAt: Date
   type: CheckTypes
   execTime: string
+  fromBlock?: number
+  toBlock?: number
+  logCount?: number
   poolCount?: number
   swapCount?: number
   tokenCount?: number

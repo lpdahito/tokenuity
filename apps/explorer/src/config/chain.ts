@@ -41,8 +41,8 @@ switch (chain.id) {
     chain.name = 'bsc'
     chain.abbr = 'bsc'
     chain.publicNode = 'https://bsc-rpc.publicnode.com'
-    chain.blockSpread = 14 // average block time = 0.75s
-    chain.timePerBlock = 0.75 // 0.75 seconds
+    chain.blockSpread = 30 // average block time = 0.45s (measured 2026-09-30); ~23 blocks per 10s tick, headroom to catch up
+    chain.timePerBlock = 0.45 // 0.45 seconds
 
     break;
 

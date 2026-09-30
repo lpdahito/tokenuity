@@ -26,11 +26,14 @@ services:
   findPools:
     <<: *explorer-dev
 
-  findSwaps:
-    <<: *explorer-dev
+  # findSwaps:
+  #   <<: *explorer-dev
 
-  findTransfers:
-    <<: *explorer-dev
+  # findTransfers:
+  #   <<: *explorer-dev
 
-  cleanUp:
-    <<: *explorer-dev
+  # cleanUp:
+  #   <<: *explorer-dev
+
+  # computeTokenData:
+  #   <<: *explorer-dev
