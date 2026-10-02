@@ -70,8 +70,6 @@ export default async (
       topics: [ source.topics ],
     })
 
-    console.log('logs:', logs.length)
-
     if (logs.length) {
       await extractData(logs, toBlock)
     }

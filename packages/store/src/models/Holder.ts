@@ -5,6 +5,10 @@ const HolderSchema = new Schema<IHolder>({
   token: { type: String },
   address: { type: String },
   balance: { type: String },
+  sent: { type: Number, default: 0 },
+  received: { type: Number, default: 0 },
+  amountIn: { type: String, default: '0' },
+  amountOut: { type: String, default: '0' },
   block: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now, immutable: true }
 })

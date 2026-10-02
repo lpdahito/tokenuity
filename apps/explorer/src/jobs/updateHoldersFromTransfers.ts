@@ -14,12 +14,24 @@ interface HolderFromTransfer {
   token: string
   address: string
   balance: bigint
+  sent: number
+  received: number
+  amountIn: bigint
+  amountOut: bigint
 }
 
 interface StoredHolderBalance {
   token: string
   address: string
   balance?: string
+  amountIn?: string
+  amountOut?: string
+}
+
+interface SavedHolderAmounts {
+  balance: bigint
+  amountIn: bigint
+  amountOut: bigint
 }
 
 type HolderWriteData = Parameters<typeof Holder.bulkWrite>[0][number]
@@ -64,12 +76,15 @@ export default async (
 
       if (!(senderKey in holders)) {
         holders[senderKey] = {
-          token, address: from, block: currentBlock, balance: -amount
+          token, address: from, block: currentBlock, balance: -amount,
+          sent: 1, received: 0, amountIn: 0n, amountOut: amount
         }
 
         // holderCount++
       } else {
         holders[senderKey].balance -= amount
+        holders[senderKey].sent++
+        holders[senderKey].amountOut += amount
         holders[senderKey].block = Math.max(holders[senderKey].block, currentBlock)
       }
     }
@@ -79,12 +94,15 @@ export default async (
 
     if (!(receiverKey in holders)) {
       holders[receiverKey] = {
-        token, address: to, block: currentBlock, balance: amount
+        token, address: to, block: currentBlock, balance: amount,
+        sent: 0, received: 1, amountIn: amount, amountOut: 0n
       }
 
       // holderCount++
     } else {
       holders[receiverKey].balance += amount
+      holders[receiverKey].received++
+      holders[receiverKey].amountIn += amount
       holders[receiverKey].block = Math.max(holders[receiverKey].block, currentBlock)
     }
 
@@ -92,17 +110,26 @@ export default async (
   }
 
   const holderList = Object.values(holders)
-  const savedHolderBalances = await getSavedHolderBalances(holderList, session)
+  const savedHolders = await getSavedHolders(holderList, session)
 
   const holderWriteData: HolderWriteData[] = holderList.map((h) => {
     const key = h.token + ':' + h.address
-    const newBalance = (savedHolderBalances.get(key) ?? 0n) + h.balance
+    const saved = savedHolders.get(key)
+
+    const newBalance = (saved?.balance ?? 0n) + h.balance
+    const newAmountIn = (saved?.amountIn ?? 0n) + h.amountIn
+    const newAmountOut = (saved?.amountOut ?? 0n) + h.amountOut
 
     return {
       updateOne: {
         filter: { token: h.token, address: h.address },
         update: {
-          $set: { balance: newBalance.toString() },
+          $set: {
+            balance: newBalance.toString(),
+            amountIn: newAmountIn.toString(),
+            amountOut: newAmountOut.toString()
+          },
+          $inc: { sent: h.sent, received: h.received },
           $max: { block: h.block }
         },
         upsert: true
@@ -114,15 +141,15 @@ export default async (
 }
 
 /**
- * Loads the currently stored balance for every (token, address) pair
- * touched in this batch. Reads are chunked and grouped by token so the
- * query can use the { token: 1, address: 1 } index.
+ * Loads the currently stored balance and gross amounts for every
+ * (token, address) pair touched in this batch. Reads are chunked and
+ * grouped by token so the query can use the { token: 1, address: 1 } index.
  */
-const getSavedHolderBalances = async (
+const getSavedHolders = async (
   list: HolderFromTransfer[],
   session?: ClientSession
-): Promise<Map<string, bigint>> => {
-  const result = new Map<string, bigint>()
+): Promise<Map<string, SavedHolderAmounts>> => {
+  const result = new Map<string, SavedHolderAmounts>()
 
   for (let i = 0; i < list.length; i += READ_CHUNK_SIZE) {
     const chunk = list.slice(i, i + READ_CHUNK_SIZE)
@@ -141,13 +168,17 @@ const getSavedHolderBalances = async (
           token, address: { $in: addresses }
         }))
       },
-      { token: 1, address: 1, balance: 1, _id: 0 }
+      { token: 1, address: 1, balance: 1, amountIn: 1, amountOut: 1, _id: 0 }
     )
       .session(session ?? null)
       .lean<StoredHolderBalance[]>()
 
     for (const d of docs) {
-      result.set(d.token + ':' + d.address, BigInt(d.balance ?? '0'))
+      result.set(d.token + ':' + d.address, {
+        balance: BigInt(d.balance ?? '0'),
+        amountIn: BigInt(d.amountIn ?? '0'),
+        amountOut: BigInt(d.amountOut ?? '0')
+      })
     }
   }
 

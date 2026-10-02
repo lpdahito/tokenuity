@@ -74,6 +74,10 @@ export interface IHolder {
   token: string,
   address: string,
   balance: string,
+  sent: number,
+  received: number,
+  amountIn: string,
+  amountOut: string,
   createdAt: Date,
 }
 
