@@ -1,7 +1,6 @@
 import { performance } from 'perf_hooks'
 
 import { chain } from '../config/chain.js'
-import { Logger } from '../config/logger.js'
 import addresses from './../config/addresses.js'
 import { providers } from '../config/provider.js'
 

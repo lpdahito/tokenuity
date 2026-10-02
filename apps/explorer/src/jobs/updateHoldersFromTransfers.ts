@@ -3,9 +3,6 @@ import type { ClientSession } from 'mongoose'
 
 import { contracts } from '../contracts/contracts.js'
 
-import { chain } from '../config/chain.js'
-import { providers } from '../config/provider.js'
-
 import * as models from '@tokenuity/store'
 
 export interface HoldersFromTransfers {
@@ -35,7 +32,6 @@ const READ_CHUNK_SIZE = 1000
 
 export default async (
   logs: ethers.Log[],
-  highestBlock: number,
   session?: ClientSession
 ): Promise<void> => {
   // let holderCount = 0
@@ -45,30 +41,13 @@ export default async (
 
   let currentBlock = 0
 
-  let highestTimestamp = 0
-  let timestamp = 0
-
   const iface = new ethers.Interface(contracts.erc20.abi)
-
-  const block = await providers[0].getBlock(highestBlock)
-  if (!block) {
-    throw new Error(`[updateHoldersFromTransfers] block ${highestBlock} not found`)
-  }
-
-  highestTimestamp = block.timestamp
 
   for (const log of logs) {
     if (log.removed) continue
     if (log.topics.length !== 3 || ethers.dataLength(log.data) !== 32) continue
 
-    if (currentBlock !== log.blockNumber) {
-      currentBlock = log.blockNumber
-
-      const blockSpread = highestBlock - currentBlock
-      const timeSpread = chain.timePerBlock * blockSpread
-
-      timestamp = Math.floor(highestTimestamp - timeSpread)
-    }
+    currentBlock = log.blockNumber
 
     const parsedLog = iface.parseLog(log)
     if (!parsedLog) continue
