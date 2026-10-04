@@ -140,10 +140,9 @@ export const findOrCreateToken = async (
       
       const _symbol = tokenContract.interface.decodeFunctionResult('symbol', results[1].returnData)[0]
 
-      let _decimals: bigint = BigInt(18)
-      if (results[2].success) {
-        _decimals = tokenContract.interface.decodeFunctionResult('decimals', results[2].returnData)[0]
-      }
+      if (!results[2].success) { return { token: null, created: false } }
+
+      const _decimals = tokenContract.interface.decodeFunctionResult('decimals', results[2].returnData)[0] as bigint
 
       if (!results[3].success) { return { token: null, created: false } }
 

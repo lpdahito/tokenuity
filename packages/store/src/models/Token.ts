@@ -2,11 +2,11 @@ import mongoose, { Schema } from 'mongoose'
 import type { IToken } from '@tokenuity/types'
 
 const TokenSchema = new Schema<IToken>({
-  name: { type: String },
+  name: { type: String, required: true },
   block: { type: Number },
-  symbol: { type: String },
-  address: { type: String },
-  decimals: { type: Number, default: 18 },
+  symbol: { type: String, required: true },
+  address: { type: String, required: true },
+  decimals: { type: Number, required: true },
   totalSupply: { type: String, required: true },
   follow: { type: Boolean, default: true },
   launchpad: { type: Number, default: null },
