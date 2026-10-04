@@ -14,6 +14,7 @@ const HolderSchema = new Schema<IHolder>({
 })
 
 HolderSchema.index({ token: 1, address: 1 }, { unique: true })
+HolderSchema.index({ token: 1, balance: 1 })
 
 export const HolderModel =
   (mongoose.models.Holder as mongoose.Model<IHolder>) ??

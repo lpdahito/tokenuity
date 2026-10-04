@@ -11,6 +11,11 @@ const TokenSchema = new Schema<IToken>({
   follow: { type: Boolean, default: true },
   launchpad: { type: Number, default: null },
   lastActivityAt: { type: Date, default: Date.now },
+  holderCount: { type: Number, default: 0 },
+  holdersDelta1m: { type: Number, default: null },
+  holdersDelta5m: { type: Number, default: null },
+  holdersDelta10m: { type: Number, default: null },
+  computedBlock: { type: Number, default: null },
   createdAt: { type: Date, default: Date.now, immutable: true }
 })
 

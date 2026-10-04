@@ -3,6 +3,7 @@ import { connect } from './client'
 import { CheckModel } from './models/Check'
 import { CursorModel } from './models/Cursor'
 import { HolderModel } from './models/Holder'
+import { HolderSnapshotModel } from './models/HolderSnapshot'
 import { PoolModel } from './models/Pool'
 import { TokenModel } from './models/Token'
 import { TokenSwapModel } from './models/TokenSwap'
@@ -12,6 +13,7 @@ const models = [
   CheckModel,
   CursorModel,
   HolderModel,
+  HolderSnapshotModel,
   PoolModel,
   TokenModel,
   TokenSwapModel,

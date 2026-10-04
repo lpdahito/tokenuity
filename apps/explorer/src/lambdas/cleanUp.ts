@@ -14,6 +14,7 @@ const {
   CheckModel: Check,
   TokenModel: Token,
   HolderModel: Holder,
+  HolderSnapshotModel: HolderSnapshot,
 } = models
 
 let execTime = '0'
@@ -44,6 +45,7 @@ export default async (
       /* Children first */
       const [holders, ] = await Promise.all([
         Holder.deleteMany({ token: { $in: addresses } }),
+        HolderSnapshot.deleteMany({ token: { $in: addresses } }),
         // PoolModel.deleteMany({ token: { $in: addresses } }),
         // StatModel.deleteMany({ token: { $in: addresses } })
       ])

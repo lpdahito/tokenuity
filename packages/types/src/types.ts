@@ -119,6 +119,18 @@ export interface IToken {
   totalSupply: string
   lastActivityAt: Date
   launchpad: Launchpads | null
+  holderCount: number
+  holdersDelta1m: number | null
+  holdersDelta5m: number | null
+  holdersDelta10m: number | null
+  computedBlock: number | null
+}
+
+export interface IHolderSnapshot {
+  token: string
+  block: number
+  holderCount: number
+  createdAt: Date
 }
 
 export interface ITokenSwap {
