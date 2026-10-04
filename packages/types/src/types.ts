@@ -124,6 +124,7 @@ export interface IToken {
   holdersDelta5m: number | null
   holdersDelta10m: number | null
   computedBlock: number | null
+  circulatingSupply: string | null
 }
 
 export interface IHolderSnapshot {

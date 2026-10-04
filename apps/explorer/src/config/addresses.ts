@@ -55,6 +55,9 @@ export interface Addresses {
   },
   zora?: string,
   clanker?: string,
+  fourmeme?: {
+    tokenManager: string
+  },
   launchpads: string[],
   uncx: {
     uniswapV2Locker: string

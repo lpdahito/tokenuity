@@ -36,6 +36,9 @@ export default {
     ]
   },
   tokenuity: '0x24Bbbd7870B707FACEF478e2e4f69fC39C91F537',
+  fourmeme: {
+    tokenManager: '0x5c952063c7fc8610FFDB798152D69F0B9550762b', // TokenManager2: holds unsold bonding-curve supply
+  },
   // tokenuity: '0x412b1549b7a63EBc57747699De0938596b9c03E2',
   // tokenuity: '0x42Bf3C59914B809E7C8E14689370091CD4048fa2',
   // tokenuity: '0x8176b7b8b950eDc683C41595e49278c351135e0B',

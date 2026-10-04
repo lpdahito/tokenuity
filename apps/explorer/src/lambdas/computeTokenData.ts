@@ -9,7 +9,7 @@ import * as models from '@tokenuity/store'
 import { getLastBlock } from '@tokenuity/store'
 
 import { CheckTypes } from '@tokenuity/types'
-import type { IToken } from '@tokenuity/types'
+import type { IHolder, IToken } from '@tokenuity/types'
 
 const {
   CheckModel: Check,
@@ -18,7 +18,13 @@ const {
   TokenModel: Token,
 } = models
 
-type ComputedToken = Pick<IToken, 'address' | 'holderCount' | 'computedBlock'>
+type ComputedToken = Pick<IToken, 'address' | 'totalSupply' | 'holderCount' | 'computedBlock'>
+
+/** Burn addresses plus the four.meme bonding curve, which holds the not-yet-sold supply */
+const NON_CIRCULATING = [
+  ...addresses.nullAddresses,
+  ...(addresses.fourmeme ? [addresses.fourmeme.tokenManager] : [])
+]
 
 const BATCH_SIZE = 500
 
@@ -47,7 +53,7 @@ export default async (
       const tokens: ComputedToken[] = await Token
         .find(
           { follow: true, ...(lastAddress !== null ? { address: { $gt: lastAddress } } : {}) },
-          { _id: 0, address: 1, holderCount: 1, computedBlock: 1 }
+          { _id: 0, address: 1, totalSupply: 1, holderCount: 1, computedBlock: 1 }
         )
         .sort({ address: 1 })
         .limit(BATCH_SIZE)
@@ -59,8 +65,9 @@ export default async (
 
       const tokenAddresses = tokens.map(t => t.address)
 
-      const [counts, ...baselines] = await Promise.all([
+      const [counts, nonCirculating, ...baselines] = await Promise.all([
         countHolders(tokenAddresses),
+        getNonCirculating(tokenAddresses),
         ...WINDOWS.map(w => getBaselines(tokenAddresses, asOfBlock - blocksIn(w)))
       ])
 
@@ -80,10 +87,16 @@ export default async (
           return [`holdersDelta${w}m`, baseline === undefined ? null : count - baseline]
         }))
 
+        const circulatingSupply = BigInt(t.totalSupply) - (nonCirculating.get(t.address) ?? 0n)
+
         return {
           updateOne: {
             filter: { address: t.address },
-            update: { $set: { holderCount: count, ...deltas, computedBlock: asOfBlock } }
+            update: { $set: {
+              holderCount: count, ...deltas,
+              circulatingSupply: circulatingSupply.toString(),
+              computedBlock: asOfBlock
+            } }
           }
         }
       }), { ordered: false })
@@ -111,10 +124,10 @@ export default async (
   }
 }
 
-/** Holders with a non-zero balance per token, excluding the zero, dead and precompile addresses. */
+/** Holders with a non-zero balance per token, excluding burn addresses and the bonding curve. */
 const countHolders = async (tokens: string[]): Promise<Map<string, number>> => {
   const rows = await Holder.aggregate<{ _id: string; count: number }>([
-    { $match: { token: { $in: tokens }, balance: { $ne: '0' }, address: { $nin: addresses.nullAddresses } } },
+    { $match: { token: { $in: tokens }, balance: { $ne: '0' }, address: { $nin: NON_CIRCULATING } } },
     { $group: { _id: '$token', count: { $sum: 1 } } },
   ])
 
@@ -130,4 +143,17 @@ const getBaselines = async (tokens: string[], block: number): Promise<Map<string
   ])
 
   return new Map(rows.map(r => [r._id, r.holderCount]))
+}
+
+/** Supply held by burn addresses and the bonding curve, per token. Balances are strings, so they're summed as bigints here. */
+const getNonCirculating = async (tokens: string[]): Promise<Map<string, bigint>> => {
+  const rows = await Holder.find(
+    { token: { $in: tokens }, address: { $in: NON_CIRCULATING } },
+    { _id: 0, token: 1, balance: 1 }
+  ).lean<Pick<IHolder, 'token' | 'balance'>[]>()
+
+  const result = new Map<string, bigint>()
+  for (const r of rows) result.set(r.token, (result.get(r.token) ?? 0n) + BigInt(r.balance))
+
+  return result
 }

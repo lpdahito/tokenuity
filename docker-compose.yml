@@ -36,15 +36,15 @@ services:
       - INSTANCE_FUNCTION_TYPE=findTransfers
     env_file: apps/explorer/.env
 
-  # computeTokenData:
-  #   image: tokenuity-explorer
-  #   container_name: tokenuity-computeTokenData
-  #   restart: always
-  #   networks:
-  #     - mongo-network
-  #   environment:
-  #     - INSTANCE_FUNCTION_TYPE=computeTokenData
-  #   env_file: apps/explorer/.env
+  computeTokenData:
+    image: tokenuity-explorer
+    container_name: tokenuity-computeTokenData
+    restart: always
+    networks:
+      - mongo-network
+    environment:
+      - INSTANCE_FUNCTION_TYPE=computeTokenData
+    env_file: apps/explorer/.env
 
   # cleanUp:
   #   image: tokenuity-explorer

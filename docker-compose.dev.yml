@@ -35,5 +35,5 @@ services:
   # cleanUp:
   #   <<: *explorer-dev
 
-  # computeTokenData:
-  #   <<: *explorer-dev
+  computeTokenData:
+    <<: *explorer-dev

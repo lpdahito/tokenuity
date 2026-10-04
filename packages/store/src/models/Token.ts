@@ -16,6 +16,7 @@ const TokenSchema = new Schema<IToken>({
   holdersDelta5m: { type: Number, default: null },
   holdersDelta10m: { type: Number, default: null },
   computedBlock: { type: Number, default: null },
+  circulatingSupply: { type: String, default: null },
   createdAt: { type: Date, default: Date.now, immutable: true }
 })
 
