@@ -591,13 +591,7 @@ export interface TokenFromExtraction {
   selectors?: string[]
   totalSupply?: string
   launchpad?: Launchpads
-  isScam?: boolean | null
-  creator?: string | null
-  website?: string | null
-  verified?: boolean | null
   protocols?: DexProtocols[]
-  compliant?: boolean | null
-  snippetSafe?: boolean | null
   lastPriceInBase?: string | null
   ownerRenounced?: boolean | null
   lowestPriceInBase?: string | null
@@ -623,13 +617,7 @@ export interface TokenInsertData {
       swapCount: number
       selectors: string[]
       totalSupply: string
-      website: string | null
-      isScam: boolean | null
-      creator: string | null
-      verified: boolean | null
       protocols: DexProtocols[]
-      compliant: boolean | null
-      snippetSafe: boolean | null
       ownerRenounced: boolean | null
     },
     upsert: boolean

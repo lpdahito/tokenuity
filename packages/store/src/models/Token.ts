@@ -7,9 +7,9 @@ const TokenSchema = new Schema<IToken>({
   symbol: { type: String },
   address: { type: String },
   decimals: { type: Number, default: 18 },
+  totalSupply: { type: String, required: true },
   follow: { type: Boolean, default: true },
   launchpad: { type: Number, default: null },
-  verified: { type: Boolean, default: null },
   lastActivityAt: { type: Date, default: Date.now },
   createdAt: { type: Date, default: Date.now, immutable: true }
 })

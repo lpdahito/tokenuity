@@ -79,6 +79,7 @@ interface TokenWithMeta {
   name: string
   symbol: string
   decimals: number
+  totalSupply: string
   launchpad: Launchpads | null
 }
 
@@ -144,9 +145,10 @@ export const findOrCreateToken = async (
         _decimals = tokenContract.interface.decodeFunctionResult('decimals', results[2].returnData)[0]
       }
 
-      
+      if (!results[3].success) { return { token: null, created: false } }
 
-      const _totalSupply = tokenContract.interface.decodeFunctionResult('totalSupply', results[3].returnData)[0]
+      const _totalSupply = tokenContract.interface.decodeFunctionResult('totalSupply', results[3].returnData)[0] as bigint
+      if (!_totalSupply) { return { token: null, created: false } }
 
       let _ownerRenounced: boolean | null = null
       if (results[4].success && results[4].returnData !== '0x') {
@@ -167,7 +169,7 @@ export const findOrCreateToken = async (
         name: _name,
         symbol: _symbol,
         selectors: selectors,
-        totalSupply: _totalSupply,
+        totalSupply: _totalSupply.toString(),
         ownerRenounced: _ownerRenounced
       })
 
@@ -819,6 +821,7 @@ export const prepareTokensFromPoolExtractions = async (
             name: tokensWithMeta[address].name,
             symbol: tokensWithMeta[address].symbol,
             decimals: tokensWithMeta[address].decimals,
+            totalSupply: tokensWithMeta[address].totalSupply,
             launchpad: tokensWithMeta[address].launchpad
             // $addToSet: { protocols: { $each: tokensWithMeta[address].protocols } }
           },
@@ -1005,10 +1008,12 @@ const getTokenMetadataForBase = async (
       const calldataForName = erc20iface.encodeFunctionData('name')
       const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
       const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
+      const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
 
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForName })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForSymbol })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForDecimals })
+      calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForTotalSupply })
 
       const calldataForClanker = clankeriface.encodeFunctionData('deploymentInfoForToken', [ tokenAddress ])
       calls.push({ target: clankerAddress, allowFailure: true, callData: calldataForClanker })
@@ -1021,27 +1026,35 @@ const getTokenMetadataForBase = async (
 
     let count = 0
     for (const tokenAddress of tokenAddresses) {
+      const offset = count
+      count += 6
+
       let launchpad: number | null = null
 
-      const name = erc20iface.decodeFunctionResult('name', results[count + 0].returnData)[0] as string
+      const name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
       if (!name) { continue }
 
-      const symbol = erc20iface.decodeFunctionResult('symbol', results[count + 1].returnData)[0] as string
+      const symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
       if (!symbol) { continue }
 
-      const decimals = erc20iface.decodeFunctionResult('decimals', results[count + 2].returnData)[0] as bigint
+      const decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
       if (!decimals) { continue }
 
-      if (results[count + 3].success) {
-        const clanker = clankeriface.decodeFunctionResult('deploymentInfoForToken', results[count + 3].returnData)[0] as string
+      if (!results[offset + 3].success) { continue }
+
+      const totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
+      if (!totalSupply) { continue }
+
+      if (results[offset + 4].success) {
+        const clanker = clankeriface.decodeFunctionResult('deploymentInfoForToken', results[offset + 4].returnData)[0] as string
 
         if (clanker && clanker !== '0x0000000000000000000000000000000000000000') {
           launchpad = Launchpads.clanker
         }
       }
 
-      if (results[count + 4].success) {
-        const zora = zoraiface.decodeFunctionResult('getVersionForDeployedCoin', results[count + 4].returnData)[0] as bigint
+      if (results[offset + 5].success) {
+        const zora = zoraiface.decodeFunctionResult('getVersionForDeployedCoin', results[offset + 5].returnData)[0] as bigint
 
         if (zora && zora !== 0n) {
           launchpad = Launchpads.zora
@@ -1049,10 +1062,8 @@ const getTokenMetadataForBase = async (
       }
 
       tokensWithMeta[tokenAddress] = {
-        name, symbol, launchpad, decimals: Number(decimals)
+        name, symbol, launchpad, totalSupply: totalSupply.toString(), decimals: Number(decimals)
       }
-      
-      count += 5
     }
   } catch(err: any) {
     console.log(err.msg)
@@ -1079,32 +1090,40 @@ const getTokenMetadataForBsc = async (
       const calldataForName = erc20iface.encodeFunctionData('name')
       const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
       const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
+      const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
 
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForName })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForSymbol })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForDecimals })
+      calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForTotalSupply })
     }
 
     const results: Array<Result> = await multicall3Contract.aggregate3.staticCall(calls)
 
     let count = 0
     for (const tokenAddress of tokenAddresses) {
+      const offset = count
+      count += 4
+
       let launchpad: number | null = null
 
-      const name = erc20iface.decodeFunctionResult('name', results[count + 0].returnData)[0] as string
+      const name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
       if (!name) { continue }
 
-      const symbol = erc20iface.decodeFunctionResult('symbol', results[count + 1].returnData)[0] as string
+      const symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
       if (!symbol) { continue }
 
-      const decimals = erc20iface.decodeFunctionResult('decimals', results[count + 2].returnData)[0] as bigint
+      const decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
       if (!decimals) { continue }
 
+      if (!results[offset + 3].success) { continue }
+
+      const totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
+      if (!totalSupply) { continue }
+
       tokensWithMeta[tokenAddress] = {
-        name, symbol, launchpad, decimals: Number(decimals)
+        name, symbol, launchpad, totalSupply: totalSupply.toString(), decimals: Number(decimals)
       }
-      
-      count += 3
     }
   } catch(err: any) {
     console.log(err.msg)

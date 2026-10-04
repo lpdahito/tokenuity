@@ -116,8 +116,8 @@ export interface IToken {
   address: string
   follow: boolean
   decimals: number
+  totalSupply: string
   lastActivityAt: Date
-  verified: boolean | null
   launchpad: Launchpads | null
 }
 
