@@ -719,121 +719,117 @@ export const prepareTokensFromPoolExtractions = async (
   let poolInsertDataArray: PoolInsertData[] = []
   let tokenInsertDataArray: TokenInsertData[] = []
 
-  try {
-    if (!Object.keys(pools).length) {
-      return {
-        poolInsertDataArray, tokenInsertDataArray
-      }
-    }
-
-    let tokenArray: string[] = []
-
-    for (const address in pools) {
-      const tokens = [
-        pools[address].token0, pools[address].token1
-      ]
-
-      for (const token of tokens) {
-        if (
-          token !== addresses.tokens.base
-          && token !== addresses.zero
-          && !tokenArray.includes(token)
-        ) {
-          tokenArray.push(token)
-        }
-      }
-    }
-
-    let tokensWithMeta: TokensWithMeta | null = null
-
-    switch (chain.id) {
-      case 56:
-        tokensWithMeta = await getTokenMetadataForBsc(tokenArray)
-        break;
-
-      case 8453:
-        tokensWithMeta = await getTokenMetadataForBase(tokenArray)
-        break;
-    }
-
-    if (!tokensWithMeta) {
-      return {
-        poolInsertDataArray, tokenInsertDataArray
-      }
-    }
-
-    for (const address in pools) {
-      const address0 = pools[address].token0
-      const address1 = pools[address].token1
-
-      if (
-        !tokensWithMeta[address0]
-        && !tokensWithMeta[address1]
-      ) { continue }
-
-      if (address0 in tokensWithMeta) {
-        pools[address].decimals0 = tokensWithMeta[address0].decimals
-
-        // if (!tokensWithMeta[address0].protocols.includes) {
-        //   tokensWithMeta[address0].protocols.push(
-        //     pools[address].protocol
-        //   )
-        // }
-      }
-
-      if (address1 in tokensWithMeta) {
-        pools[address].decimals1 = tokensWithMeta[address1].decimals
-
-        // if (!tokensWithMeta[address1].protocols.includes) {
-        //   tokensWithMeta[address1].protocols.push(
-        //     pools[address].protocol
-        //   )
-        // }
-      }
-
-      poolInsertDataArray.push(<PoolInsertData>{
-        updateOne: {
-          filter: { address },
-          update: {
-            fee: pools[address].fee,
-            block: pools[address].block,
-            hooks: pools[address].hooks,
-            token0: pools[address].token0,
-            token1: pools[address].token1,
-            firstBlock: pools[address].block,
-            protocol: pools[address].protocol,
-            decimals0: pools[address].decimals0,
-            decimals1: pools[address].decimals1,
-            createdAt: pools[address].createdAt,
-            tickSpacing: pools[address].tickSpacing
-          },
-          upsert: true
-        }
-      })
-    }
-
-    for (const address in tokensWithMeta) {
-      tokenInsertDataArray.push(<TokenInsertData>{
-        updateOne: {
-          filter: { address },
-          update: {
-            name: tokensWithMeta[address].name,
-            symbol: tokensWithMeta[address].symbol,
-            decimals: tokensWithMeta[address].decimals,
-            totalSupply: tokensWithMeta[address].totalSupply,
-            launchpad: tokensWithMeta[address].launchpad
-            // $addToSet: { protocols: { $each: tokensWithMeta[address].protocols } }
-          },
-          upsert: true
-        }
-      })
-    }
-  } catch (err: any) {
-    Logger.err({ error: err, report: true })
-  } finally {
+  if (!Object.keys(pools).length) {
     return {
       poolInsertDataArray, tokenInsertDataArray
     }
+  }
+
+  let tokenArray: string[] = []
+
+  for (const address in pools) {
+    const tokens = [
+      pools[address].token0, pools[address].token1
+    ]
+
+    for (const token of tokens) {
+      if (
+        token !== addresses.tokens.base
+        && token !== addresses.zero
+        && !tokenArray.includes(token)
+      ) {
+        tokenArray.push(token)
+      }
+    }
+  }
+
+  let tokensWithMeta: TokensWithMeta | null = null
+
+  switch (chain.id) {
+    case 56:
+      tokensWithMeta = await getTokenMetadataForBsc(tokenArray)
+      break;
+
+    case 8453:
+      tokensWithMeta = await getTokenMetadataForBase(tokenArray)
+      break;
+  }
+
+  if (!tokensWithMeta) {
+    return {
+      poolInsertDataArray, tokenInsertDataArray
+    }
+  }
+
+  for (const address in pools) {
+    const address0 = pools[address].token0
+    const address1 = pools[address].token1
+
+    if (
+      !tokensWithMeta[address0]
+      && !tokensWithMeta[address1]
+    ) { continue }
+
+    if (address0 in tokensWithMeta) {
+      pools[address].decimals0 = tokensWithMeta[address0].decimals
+
+      // if (!tokensWithMeta[address0].protocols.includes) {
+      //   tokensWithMeta[address0].protocols.push(
+      //     pools[address].protocol
+      //   )
+      // }
+    }
+
+    if (address1 in tokensWithMeta) {
+      pools[address].decimals1 = tokensWithMeta[address1].decimals
+
+      // if (!tokensWithMeta[address1].protocols.includes) {
+      //   tokensWithMeta[address1].protocols.push(
+      //     pools[address].protocol
+      //   )
+      // }
+    }
+
+    poolInsertDataArray.push(<PoolInsertData>{
+      updateOne: {
+        filter: { address },
+        update: {
+          fee: pools[address].fee,
+          block: pools[address].block,
+          hooks: pools[address].hooks,
+          token0: pools[address].token0,
+          token1: pools[address].token1,
+          firstBlock: pools[address].block,
+          protocol: pools[address].protocol,
+          decimals0: pools[address].decimals0,
+          decimals1: pools[address].decimals1,
+          createdAt: pools[address].createdAt,
+          tickSpacing: pools[address].tickSpacing
+        },
+        upsert: true
+      }
+    })
+  }
+
+  for (const address in tokensWithMeta) {
+    tokenInsertDataArray.push(<TokenInsertData>{
+      updateOne: {
+        filter: { address },
+        update: {
+          name: tokensWithMeta[address].name,
+          symbol: tokensWithMeta[address].symbol,
+          decimals: tokensWithMeta[address].decimals,
+          totalSupply: tokensWithMeta[address].totalSupply,
+          launchpad: tokensWithMeta[address].launchpad
+          // $addToSet: { protocols: { $each: tokensWithMeta[address].protocols } }
+        },
+        upsert: true
+      }
+    })
+  }
+
+  return {
+    poolInsertDataArray, tokenInsertDataArray
   }
 }
 
@@ -982,6 +978,8 @@ export const calculateAndUpdateTokens = async (
   }
 }
 
+const METADATA_BATCH_SIZE = 150
+
 const getTokenMetadataForBase = async (
   tokenAddresses: string[]
 ): Promise<TokensWithMeta> => {
@@ -995,20 +993,24 @@ const getTokenMetadataForBase = async (
     addresses.multicall3, contracts.multicall3.abi, wallets[0]
   )
 
-  let calls: Array<Call3> = []
-
   const clankerAddress = addresses.clanker
   const zoraAddress = addresses.zora
 
-  if (!clankerAddress || !zoraAddress) { return tokensWithMeta }
+  if (!clankerAddress || !zoraAddress) {
+    throw new Error('[getTokenMetadataForBase] clanker or zora address is not configured')
+  }
 
-  try {
-    for (const tokenAddress of tokenAddresses) {
-      const calldataForName = erc20iface.encodeFunctionData('name')
-      const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
-      const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
-      const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
+  const calldataForName = erc20iface.encodeFunctionData('name')
+  const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
+  const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
+  const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
 
+  for (let i = 0; i < tokenAddresses.length; i += METADATA_BATCH_SIZE) {
+    const batch = tokenAddresses.slice(i, i + METADATA_BATCH_SIZE)
+
+    let calls: Array<Call3> = []
+
+    for (const tokenAddress of batch) {
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForName })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForSymbol })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForDecimals })
@@ -1021,54 +1023,67 @@ const getTokenMetadataForBase = async (
       calls.push({ target: zoraAddress, allowFailure: true, callData: calldataForZora })
     }
 
+    // RPC failures propagate: a transient error must not look like "no metadata"
     const results: Array<Result> = await multicall3Contract.aggregate3.staticCall(calls)
 
-    let count = 0
-    for (const tokenAddress of tokenAddresses) {
-      const offset = count
-      count += 6
+    for (const [index, tokenAddress] of batch.entries()) {
+      const offset = index * 6
 
-      let launchpad: number | null = null
+      if (
+        !results[offset + 0].success
+        || !results[offset + 1].success
+        || !results[offset + 2].success
+        || !results[offset + 3].success
+      ) { continue }
 
-      const name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
-      if (!name) { continue }
+      let name: string
+      let symbol: string
+      let decimals: bigint
+      let totalSupply: bigint
 
-      const symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
-      if (!symbol) { continue }
-
-      const decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
-      if (!decimals) { continue }
-
-      if (!results[offset + 3].success) { continue }
-
-      const totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
-      if (!totalSupply) { continue }
-
-      if (results[offset + 4].success) {
-        const clanker = clankeriface.decodeFunctionResult('deploymentInfoForToken', results[offset + 4].returnData)[0] as string
-
-        if (clanker && clanker !== '0x0000000000000000000000000000000000000000') {
-          launchpad = Launchpads.clanker
-        }
+      // A reverting or non-standard token is skipped on its own, not the whole batch
+      try {
+        name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
+        symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
+        decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
+        totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
+      } catch (err: any) {
+        Logger.err({ error: err, report: false })
+        continue
       }
 
-      if (results[offset + 5].success) {
-        const zora = zoraiface.decodeFunctionResult('getVersionForDeployedCoin', results[offset + 5].returnData)[0] as bigint
+      if (!name || !symbol || !decimals || !totalSupply) { continue }
 
-        if (zora && zora !== 0n) {
-          launchpad = Launchpads.zora
+      // Launchpad detection is best-effort: a failed lookup leaves it null, it doesn't drop the token
+      let launchpad: number | null = null
+
+      try {
+        if (results[offset + 4].success) {
+          const clanker = clankeriface.decodeFunctionResult('deploymentInfoForToken', results[offset + 4].returnData)[0] as string
+
+          if (clanker && clanker !== '0x0000000000000000000000000000000000000000') {
+            launchpad = Launchpads.clanker
+          }
         }
+
+        if (results[offset + 5].success) {
+          const zora = zoraiface.decodeFunctionResult('getVersionForDeployedCoin', results[offset + 5].returnData)[0] as bigint
+
+          if (zora && zora !== 0n) {
+            launchpad = Launchpads.zora
+          }
+        }
+      } catch (err: any) {
+        Logger.err({ error: err, report: false })
       }
 
       tokensWithMeta[tokenAddress] = {
         name, symbol, launchpad, totalSupply: totalSupply.toString(), decimals: Number(decimals)
       }
     }
-  } catch(err: any) {
-    console.log(err.msg)
-  } finally {
-    return tokensWithMeta
   }
+
+  return tokensWithMeta
 }
 
 const getTokenMetadataForBsc = async (
@@ -1082,51 +1097,58 @@ const getTokenMetadataForBsc = async (
     addresses.multicall3, contracts.multicall3.abi, wallets[0]
   )
 
-  let calls: Array<Call3> = []
+  const calldataForName = erc20iface.encodeFunctionData('name')
+  const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
+  const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
+  const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
 
-  try {
-    for (const tokenAddress of tokenAddresses) {
-      const calldataForName = erc20iface.encodeFunctionData('name')
-      const calldataForSymbol = erc20iface.encodeFunctionData('symbol')
-      const calldataForDecimals = erc20iface.encodeFunctionData('decimals')
-      const calldataForTotalSupply = erc20iface.encodeFunctionData('totalSupply')
+  for (let i = 0; i < tokenAddresses.length; i += METADATA_BATCH_SIZE) {
+    const batch = tokenAddresses.slice(i, i + METADATA_BATCH_SIZE)
 
+    let calls: Array<Call3> = []
+
+    for (const tokenAddress of batch) {
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForName })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForSymbol })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForDecimals })
       calls.push({ target: tokenAddress, allowFailure: true, callData: calldataForTotalSupply })
     }
 
+    // RPC failures propagate: a transient error must not look like "no metadata"
     const results: Array<Result> = await multicall3Contract.aggregate3.staticCall(calls)
 
-    let count = 0
-    for (const tokenAddress of tokenAddresses) {
-      const offset = count
-      count += 4
+    for (const [index, tokenAddress] of batch.entries()) {
+      const offset = index * 4
 
-      let launchpad: number | null = null
+      if (
+        !results[offset + 0].success
+        || !results[offset + 1].success
+        || !results[offset + 2].success
+        || !results[offset + 3].success
+      ) { continue }
 
-      const name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
-      if (!name) { continue }
+      // A reverting or non-standard token is skipped on its own, not the whole batch
+      try {
+        const name = erc20iface.decodeFunctionResult('name', results[offset + 0].returnData)[0] as string
+        if (!name) { continue }
 
-      const symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
-      if (!symbol) { continue }
+        const symbol = erc20iface.decodeFunctionResult('symbol', results[offset + 1].returnData)[0] as string
+        if (!symbol) { continue }
 
-      const decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
-      if (!decimals) { continue }
+        const decimals = erc20iface.decodeFunctionResult('decimals', results[offset + 2].returnData)[0] as bigint
+        if (!decimals) { continue }
 
-      if (!results[offset + 3].success) { continue }
+        const totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
+        if (!totalSupply) { continue }
 
-      const totalSupply = erc20iface.decodeFunctionResult('totalSupply', results[offset + 3].returnData)[0] as bigint
-      if (!totalSupply) { continue }
-
-      tokensWithMeta[tokenAddress] = {
-        name, symbol, launchpad, totalSupply: totalSupply.toString(), decimals: Number(decimals)
+        tokensWithMeta[tokenAddress] = {
+          name, symbol, launchpad: null, totalSupply: totalSupply.toString(), decimals: Number(decimals)
+        }
+      } catch (err: any) {
+        Logger.err({ error: err, report: false })
       }
     }
-  } catch(err: any) {
-    console.log(err.msg)
-  } finally {
-    return tokensWithMeta
   }
+
+  return tokensWithMeta
 }
